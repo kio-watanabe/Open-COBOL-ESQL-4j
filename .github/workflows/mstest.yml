@@ -23,10 +23,13 @@ jobs:
       run: nuget restore ./win/
 
     - name: Build
-      run: msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
+      run: |
+        msbuild /p:Configuration=Release /p:AdditionalIncludePaths=.\:ocesql win\ocesql.sln
+        mkdir C:\ocesql4j\bin
+        copy .\Release\ocesql.exe C:\ocesql4j\bin
     
     - name: Version display
-      working-directory: win/x64/Release
+      working-directory: win\x64\Release
       run: |
-        $env:PATH+=";C:\opensourcecobol4j\bin\
+        $env:PATH+=";C:\ocesql4j\bin\
         ocesql --version
