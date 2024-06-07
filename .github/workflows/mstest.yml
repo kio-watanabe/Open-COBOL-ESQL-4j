@@ -31,5 +31,5 @@ jobs:
     - name: Version display
       working-directory: win\x64\Release
       run: |
-        $env:PATH+=";C:\ocesql4j\bin\
+        $env:PATH+=";C:\ocesql4j\bin\"
         ocesql --version
