@@ -1,0 +1,31 @@
+name: Check workflow files
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2.0.0
+        
+    - name: Install Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Restore NuGet packages
+      run: nuget restore ./win/
+
+    - name: Build
+      run: msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
+    
+    - name: Version display
+      working-directory: win/x64/Release
+      run: |
+        ocesql --version
