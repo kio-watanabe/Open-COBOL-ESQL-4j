@@ -28,4 +28,5 @@ jobs:
     - name: Version display
       working-directory: win/x64/Release
       run: |
+        $env:PATH+=";C:\opensourcecobol4j\bin\
         ocesql --version
