@@ -20,13 +20,13 @@ jobs:
         java-version: '11'
 
     - name: Restore NuGet packages
-      run: nuget restore ./win/
+      run: nuget restore .\win\
 
     - name: Build
       run: |
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=.\:ocesql win\ocesql.sln
         mkdir C:\ocesql4j\bin
-        copy .\Release\ocesql.exe C:\ocesql4j\bin
+        copy .\x64\Release\ocesql.exe C:\ocesql4j\bin
     
     - name: Version display
       working-directory: win\x64\Release
