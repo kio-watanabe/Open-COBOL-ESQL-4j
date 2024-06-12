@@ -35,5 +35,5 @@ jobs:
     if: github.event_name != 'schedule'
     uses: ./.github/workflows/doc.yml
     
-  mstest:
-    uses: ./.github/workflows/mstest.yml
+  windows-test:
+    uses: ./.github/workflows/windows-test.yml
