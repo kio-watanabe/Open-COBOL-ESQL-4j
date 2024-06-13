@@ -37,6 +37,9 @@ jobs:
         repository: opensourcecobol/opensourcecobol4j
         path: opensourcecobol4j
 
+    - name: Restore NuGet packages of opensourcecobol4j
+      run: nuget restore ./opensourcecobol4j/win/
+    
     - name: Install opensource COBOL 4J
       run: |
         cd opensourcecobol4j/libcobj
@@ -50,7 +53,7 @@ jobs:
         copy ../opensourcecobol4j/libcobj/app/build/libs/libcobj.jar lib
         sbt assembly
     
-    - name: Restore NuGet packages
+    - name: Restore NuGet packages of ocesql4j
       run: nuget restore ./win/
 
     - name: Build ocesql.exe
