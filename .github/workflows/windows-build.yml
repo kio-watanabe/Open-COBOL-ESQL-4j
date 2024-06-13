@@ -59,8 +59,6 @@ jobs:
     - name: Build ocesql.exe
       run: |
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
-        mkdir C:\ocesql4j\bin
-        copy ./win/x64/Release/ocesql.exe C:\ocesql4j\bin
     
     - name: Version display
       run: |
