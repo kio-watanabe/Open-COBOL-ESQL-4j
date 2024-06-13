@@ -14,6 +14,22 @@ jobs:
   test:
     runs-on: windows-latest
 
+      # services:
+      #   postgres15:
+      #   image: postgres:15
+      #   ports: 
+      #     - 5433:5432
+      #   env:
+      #     POSTGRES_PASSWORD: password
+      #     POSTGRES_USER: main_user
+      #     POSTGRES_DB: testdb
+      #     POSTGRES_HOST_AUTH_METHOD: 'trust'
+      #   options: >-
+      #     --health-cmd pg_isready
+      #     --health-interval 10s
+      #     --health-timeout 5s
+      #     --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
 
@@ -48,6 +64,7 @@ jobs:
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
 
     - name: Build ocesql4j.jar
+      uses: actions/checkout@v4
       working-directory: dblibj
       run: |
         copy ../opensourcecobol4j/libcobj/app/build/libs/libcobj.jar lib
