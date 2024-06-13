@@ -1,0 +1,63 @@
+name: Windows build
+
+on:
+  workflow_call:
+
+env: 
+  #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
+  OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\libocesql4j.jar
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2.0.0
+        
+    - name: Install Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Setup sbt
+      uses: olafurpg/setup-scala@v11
+      with:
+        java-version: zulu@1.11
+
+    - name: Checkout opensource COBOL 4J
+      uses: actions/checkout@v4
+      with:
+        repository: opensourcecobol/opensourcecobol4j
+        path: opensourcecobol4j
+
+    - name: Install opensource COBOL 4J
+      run: |
+        cd opensourcecobol4j/libcobj
+        ./gradlew shadowJar
+        cd ../
+        msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
+
+    - name: Build ocesql4j.jar
+      working-directory: dblibj
+      run: |
+        copy ../opensourcecobol4j/libcobj/app/build/libs/libcobj.jar lib
+        sbt assembly
+    
+    - name: Restore NuGet packages
+      run: nuget restore ./win/
+
+    - name: Build ocesql.exe
+      run: |
+        msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
+        mkdir C:\ocesql4j\bin
+        copy ./win/x64/Release/ocesql.exe C:\ocesql4j\bin
+    
+    - name: Version display
+      working-directory: win/x64/Release
+      run: |
+        ./win/install.ps1
+        ocesql --version
