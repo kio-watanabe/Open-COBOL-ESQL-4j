@@ -63,7 +63,6 @@ jobs:
         copy ./win/x64/Release/ocesql.exe C:\ocesql4j\bin
     
     - name: Version display
-      working-directory: win/x64/Release
       run: |
         cd win
         ./install.ps1
