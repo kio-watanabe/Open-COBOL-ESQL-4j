@@ -65,5 +65,6 @@ jobs:
     - name: Version display
       working-directory: win/x64/Release
       run: |
-        ./win/install.ps1
+        cd win
+        ./install.ps1
         ocesql --version
