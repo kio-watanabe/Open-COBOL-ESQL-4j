@@ -3,6 +3,9 @@ name: Windows build
 on:
   workflow_call:
 
+permissions:
+  contents: read
+
 env: 
   #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
   OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\libocesql4j.jar
