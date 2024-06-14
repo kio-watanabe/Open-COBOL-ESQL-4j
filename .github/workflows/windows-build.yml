@@ -8,7 +8,7 @@ permissions:
 
 env: 
   #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
-  OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\libocesql4j.jar
+  OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\lib\ocesql4j.jar
 
 jobs:
   test:
@@ -80,4 +80,6 @@ jobs:
       run: |
         cd win
         ./install.ps1
+        $env:PATH=";C\ocesql4j\bin"
+        $env:CLASSPATH="C\ocesql4j\ocesql4j.jar;"
         ocesql --version
