@@ -78,10 +78,10 @@ jobs:
     #     $env:CLASSPATH="C:\ocesql4j\ocesql4j.jar;"
     #     ocesql --version
 
-    - name: Create psql user
-      run: |
-        createuser -d -U postgres -P user
-        createdb  testdb --owner=user
+    # - name: Create psql user
+    #   run: |
+    #     createuser -d -U postgres -P user
+    #     createdb  testdb --owner=user
     #    psql -c "ALTER USER myuser WITH PASSWORD 'mypassword'"
 
     - name: Test SQL connection
