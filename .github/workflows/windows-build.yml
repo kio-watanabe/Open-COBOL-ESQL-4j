@@ -65,8 +65,8 @@ jobs:
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
     
     - name: Version display
-      working-directory: win
       run: |
+        cd win
         ./install.ps1
         $env:PATH=";C:\ocesql4j\bin"
         $env:CLASSPATH="C:\ocesql4j\ocesql4j.jar;"
