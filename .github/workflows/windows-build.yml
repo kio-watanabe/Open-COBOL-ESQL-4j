@@ -6,11 +6,11 @@ on:
 permissions:
   contents: read
 
-env: 
-  PATH: "C:\opensourcecobol4j\bin;C:\ocesql4j\bin"
-  CLASSPATH: "C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar"
-  #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
-  OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\lib\ocesql4j.jar
+# env: 
+#   PATH: C:\opensourcecobol4j\bin;C:\ocesql4j\bin
+#   CLASSPATH: C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar
+#   #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
+#   OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\lib\ocesql4j.jar
 
 jobs:
   test:
