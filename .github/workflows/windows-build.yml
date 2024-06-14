@@ -80,6 +80,6 @@ jobs:
       run: |
         cd win
         ./install.ps1
-        $env:PATH=";C\ocesql4j\bin"
-        $env:CLASSPATH="C\ocesql4j\ocesql4j.jar;"
+        $env:PATH=";C:\ocesql4j\bin"
+        $env:CLASSPATH="C:\ocesql4j\ocesql4j.jar;"
         ocesql --version
