@@ -26,7 +26,7 @@ jobs:
       uses: ikalnytskyi/action-setup-postgres@v6
       with:
         username: postgres
-        password: user
+        password: ""
         database: testdb
         port: 5432
       id: postgres
