@@ -28,7 +28,7 @@ jobs:
         username: postgres
  #       password: user
         database: testdb
-        port: 5432
+        port: 5432:5432
 
     - name: Checkout opensource COBOL 4J
       uses: actions/checkout@v4
