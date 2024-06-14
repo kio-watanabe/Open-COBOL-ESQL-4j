@@ -90,8 +90,8 @@ jobs:
       run: |
         cd win
         ./install.ps1
-        $env:PATH=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
-        $env:CLASSPATH=";C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar"
+        $env:PATH+=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
+        $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar"
         cd ../sample
         copy ../copy/sqlca.cbl .
         ocesql FETCHTBL.cbl  FETCHTBL.cob
