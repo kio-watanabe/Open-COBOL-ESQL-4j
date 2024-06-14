@@ -22,11 +22,11 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2.0.0
         
-    - name: Install Java
+    - name: Install Java 11
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '21'
+        java-version: '11'
     
     - name: Install postgresql
       uses: ikalnytskyi/action-setup-postgres@v6
@@ -86,6 +86,12 @@ jobs:
     #     createdb  testdb --owner=user
     #    psql -c "ALTER USER myuser WITH PASSWORD 'mypassword'"
 
+    - name: Install Java 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+    
     - name: Test SQL connection
       run: |
         cd win
