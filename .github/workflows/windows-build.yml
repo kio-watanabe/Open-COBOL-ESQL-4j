@@ -6,12 +6,6 @@ on:
 permissions:
   contents: read
 
-# env: 
-#   PATH: C:\opensourcecobol4j\bin;C:\ocesql4j\bin
-#   CLASSPATH: C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar
-#   #COBOL4J_LIBCOBJ_JAR_PATH: C:\opensourcecobol4j\lib\libcobj.jar
-#   OCESQL4J_OCESQL4J_JAR_PATH: C:\ocesql4j\lib\ocesql4j.jar
-
 jobs:
   test:
     runs-on: windows-latest
@@ -35,7 +29,6 @@ jobs:
         password: user
         database: testdb
         port: 5432
-      #  id: postgres
 
     - name: Checkout opensource COBOL 4J
       uses: actions/checkout@v4
@@ -78,32 +71,17 @@ jobs:
       run: |
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
     
-    # - name: Version display
-    #   run: |
-    #     cd win
-    #     ./install.ps1
-    #     $env:PATH=";C:\ocesql4j\bin"
-    #     $env:CLASSPATH="C:\ocesql4j\ocesql4j.jar;"
-    #     ocesql --version
-
-    # - name: Create psql user
-    #   run: |
-    #     createuser -d -U postgres -P user
-    #     createdb  testdb --owner=user
-    #    psql -c "ALTER USER myuser WITH PASSWORD 'mypassword'"
-    
     - name: Test SQL connection
       run: |
         cd win
         ./install.ps1
         $env:PATH+=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
-        $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar"
+        $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\lib\ocesql4j.jar"
         cd ../sample
         copy ../copy/sqlca.cbl .
         ocesql FETCHTBL.cbl  FETCHTBL.cob
         ocesql INSERTTBL.cbl INSERTTBL.cob
         cobj INSERTTBL.cob
         cobj FETCHTBL.cob
-        dir
         java INSERTTBL.java
         java FETCHTBL.java
