@@ -85,13 +85,12 @@ jobs:
     #    psql -c "ALTER USER myuser WITH PASSWORD 'mypassword'"
 
     - name: Test SQL connection
-      working-directory: sample
       run: |
-        cd ../win
+        cd win
         ./install.ps1
         $env:PATH=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin"
         $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\ocesql4j.jar"
-        cd ../
+        cd ../sample
         copy ../copy/sqlca.cbl .
         ocesql FETCHTBL.cbl  FETCHTBL.cob
         ocesql INSERTTBL.cbl INSERTTBL.cob
