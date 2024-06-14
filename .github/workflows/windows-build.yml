@@ -24,11 +24,11 @@ jobs:
     
     - name: Install postgresql
       uses: ikalnytskyi/action-setup-postgres@v6
-      with:
-        username: postgres
-        password: 
-        database: testdb
-        port: 5432
+      # with:
+      #   username: postgres
+      #   password: 
+      #   database: testdb
+      #   port: 5432
 
     - name: Checkout opensource COBOL 4J
       uses: actions/checkout@v4
@@ -73,6 +73,8 @@ jobs:
     
     - name: Test SQL connection
       run: |
+        createuser -d -U postgres -P user
+        createdb testdb --owner=user
         cd win
         ./install.ps1
         $env:PATH+=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
