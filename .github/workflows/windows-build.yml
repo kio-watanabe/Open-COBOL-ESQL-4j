@@ -28,8 +28,14 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
     
-    - name: Install postgresql
-      uses: ikalnytskyi/action-setup-postgres@v6
+    # - name: Install postgresql
+    #   uses: ikalnytskyi/action-setup-postgres@v6
+      # with:
+      #   username: ci
+      #   password: sw0rdfish
+      #   database: test
+      #   port: 34837
+      #   id: postgres
 
     - name: Checkout opensource COBOL 4J
       uses: actions/checkout@v4
