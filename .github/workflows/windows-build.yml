@@ -101,10 +101,9 @@ jobs:
         cd ../sample
         copy ../copy/sqlca.cbl .
         ocesql FETCHTBL.cbl  FETCHTBL.cob
-        type FETCHTBL.cob
         ocesql INSERTTBL.cbl INSERTTBL.cob
-        type INSERTTBL.cob
         cobj INSERTTBL.cob
         cobj FETCHTBL.cob
+        dir
         java INSERTTBL
         java FETCHTBL
