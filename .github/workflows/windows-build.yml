@@ -90,4 +90,6 @@ jobs:
         cobj INSERTTBL.cob
         cobj FETCHTBL.cob
         java INSERTTBL.java
-        java FETCHTBL.java
+        java FETCHTBL.java > sample-result
+        Compare-Object -ReferenceObject (Get-Content -Path sample-result) -DifferenceObject (Get-Content -Path ../win/sample-correct) > test-result
+        if ((Get-Content -Path test-result) -ne $null){ exit(-1) }
