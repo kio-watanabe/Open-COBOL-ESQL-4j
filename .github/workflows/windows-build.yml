@@ -26,7 +26,7 @@ jobs:
       uses: ikalnytskyi/action-setup-postgres@v6
       with:
         username: postgres
-        password: '          '
+        password: password
         database: testdb
         port: 5432
       id: postgres
@@ -71,13 +71,22 @@ jobs:
     - name: Build ocesql.exe
       run: |
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
+
+    - name: Set Environment values
+      run: |
+        $env:PATH+=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
+        $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\lib\ocesql4j.jar"
+    
+    - name: Set password of SQL
+      working-directory: sample
+      run: |
+        (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  password          TO   PASSWD" } | Set-Content FETCHTBL.cbl
+        (Get-Content INSERTTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  password          TO   PASSWD" } | Set-Content INSERTTBL.cbl
     
     - name: Test SQL connection
       run: |
         cd win
         ./install.ps1
-        $env:PATH+=";C:\opensourcecobol4j\bin;C:\ocesql4j\bin;C:\ocesql4j\config"
-        $env:CLASSPATH="C:\opensourcecobol4j\lib\libcobj.jar;C:\ocesql4j\lib\ocesql4j.jar"
         cd ../sample
         copy ../copy/sqlca.cbl .
         ocesql FETCHTBL.cbl  FETCHTBL.cob
