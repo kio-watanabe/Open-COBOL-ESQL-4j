@@ -36,28 +36,21 @@ jobs:
       with:
         repository: opensourcecobol/opensourcecobol4j
         path: opensourcecobol4j
+    
+    - name: Build libcobj.jar
+      working-directory: opensourcecobol4j/libcobj
+      run:  ./gradlew shadowJar
 
     - name: Restore NuGet packages of opensourcecobol4j
       run: nuget restore ./opensourcecobol4j/win/
-    
-    - name: Install opensource COBOL 4J
-      run: |
-        cd opensourcecobol4j/libcobj
-        ./gradlew shadowJar
-        mkdir C:\opensourcecobol4j\lib
-        copy app/build/libs/libcobj.jar C:\opensourcecobol4j\lib
-        cd ../
-        msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
-        mkdir C:\opensourcecobol4j\bin
-        mkdir C:\opensourcecobol4j\config
-        copy win/x64/Release/cobj.exe C:\opensourcecobol4j\bin\
-        copy config/*.conf C:\opensourcecobol4j\config\
 
-    # - name: Install Java 11
-    #   uses: actions/setup-java@v4
-    #   with:
-    #     distribution: 'temurin'
-    #     java-version: '11'
+    - name: Build cobj.exe
+      working-directory: opensourcecobol4j
+      run: msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
+    
+    - name: Place file of opensource COBOL 4J
+      working-directory: opensourcecobol4j/win
+      run : ./make-install.ps1
     
     - name: Build ocesql4j.jar
       run: |
@@ -72,17 +65,16 @@ jobs:
       run: |
         msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:ocesql win/ocesql.sln
  
-    - name: Place files
+    - name: Place files of OCESQL 4j
       working-directory: win
       run: ./install.ps1
 
     - name: Set password of SQL
       working-directory: sample
       run: |
-        (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  password          TO   PASSWD" } | Set-Content FETCHTBL.cbl
-        (Get-Content INSERTTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  password          TO   PASSWD" } | Set-Content INSERTTBL.cbl
+        (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content FETCHTBL.cbl
+        (Get-Content INSERTTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content INSERTTBL.cbl
    
-    
     - name: Test SQL connection
       working-directory: sample
       run: |
