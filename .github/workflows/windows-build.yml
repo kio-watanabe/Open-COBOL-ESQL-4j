@@ -39,19 +39,23 @@ jobs:
     
     - name: Build libcobj.jar
       working-directory: opensourcecobol4j/libcobj
-      run:  ./gradlew shadowJar
+      run: |
+        ./gradlew shadowJar
+        mkdir C:\opensourcecobol4j\lib
+        copy app/build/libs/libcobj.jar C:\opensourcecobol4j\lib
 
     - name: Restore NuGet packages of opensourcecobol4j
       run: nuget restore ./opensourcecobol4j/win/
 
-    - name: Build cobj.exe
+    - name: Build ocesql.exe
       working-directory: opensourcecobol4j
-      run: msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
-    
-    - name: Place file of opensource COBOL 4J
-      working-directory: opensourcecobol4j/win
-      run : ./make-install.ps1
-    
+      run: |
+        msbuild /p:Configuration=Release /p:AdditionalIncludePaths=./:./cobj/:./win:./lib win/opensourcecobol4j.sln
+        mkdir C:\opensourcecobol4j\bin
+        mkdir C:\opensourcecobol4j\config
+        copy win/x64/Release/cobj.exe C:\opensourcecobol4j\bin\
+        copy config/*.conf C:\opensourcecobol4j\config\
+        
     - name: Build ocesql4j.jar
       run: |
         cd dblibj
