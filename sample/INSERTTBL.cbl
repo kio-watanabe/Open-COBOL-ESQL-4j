@@ -69,7 +69,7 @@
       *    CONNECT
            MOVE  "testdb"          TO   DBNAME.
            MOVE  "postgres"        TO   USERNAME.
-           MOVE  "password"        TO   PASSWD.
+           MOVE  SPACE             TO   PASSWD.
            EXEC SQL
                CONNECT :USERNAME IDENTIFIED BY :PASSWD USING :DBNAME 
            END-EXEC.
@@ -159,4 +159,3 @@
                  DISPLAY SQLERRMC
            END-EVALUATE.
       ******************************************************************  
-      
