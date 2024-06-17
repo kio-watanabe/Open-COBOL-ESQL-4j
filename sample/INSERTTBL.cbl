@@ -28,16 +28,16 @@
       *   03 FILLER       PIC X(28) VALUE "0008IBARAKI HACHIRO     0050".
       *   03 FILLER       PIC X(28) VALUE "0009GUMMA KURO          020p".
       *   03 FILLER       PIC X(28) VALUE "0010SAITAMA JURO        0350".
-         03 FILLER       PIC X(28) VALUE "0001–kŠC@‘¾˜Y          0400".
-         03 FILLER       PIC X(28) VALUE "0002ÂX@ŽŸ˜Y          0350".
-         03 FILLER       PIC X(28) VALUE "0003H“c@ŽO˜Y          0300".
-         03 FILLER       PIC X(28) VALUE "0004ŠâŽè@Žl˜Y          025p".
-         03 FILLER       PIC X(28) VALUE "0005‹{é@ŒÜ˜Y          020p".
-         03 FILLER       PIC X(28) VALUE "0006•Ÿ“‡@˜Z˜Y          0150".
-         03 FILLER       PIC X(28) VALUE "0007“È–Ø@Žµ˜Y          010p".
-         03 FILLER       PIC X(28) VALUE "0008ˆïé@”ª˜Y          0050".
-         03 FILLER       PIC X(28) VALUE "0009ŒQ”n@‹ã˜Y          020p".
-         03 FILLER       PIC X(28) VALUE "0010é‹Ê@\˜Y          0350".
+         03 FILLER       PIC X(28) VALUE "0001åŒ—æµ·ã€€å¤ªéƒŽ          0400".
+         03 FILLER       PIC X(28) VALUE "0002é’æ£®ã€€æ¬¡éƒŽ          0350".
+         03 FILLER       PIC X(28) VALUE "0003ç§‹ç”°ã€€ä¸‰éƒŽ          0300".
+         03 FILLER       PIC X(28) VALUE "0004å²©æ‰‹ã€€å››éƒŽ          025p".
+         03 FILLER       PIC X(28) VALUE "0005å®®åŸŽã€€äº”éƒŽ          020p".
+         03 FILLER       PIC X(28) VALUE "0006ç¦å³¶ã€€å…­éƒŽ          0150".
+         03 FILLER       PIC X(28) VALUE "0007æ ƒæœ¨ã€€ä¸ƒéƒŽ          010p".
+         03 FILLER       PIC X(28) VALUE "0008èŒ¨åŸŽã€€å…«éƒŽ          0050".
+         03 FILLER       PIC X(28) VALUE "0009ç¾¤é¦¬ã€€ä¹éƒŽ          020p".
+         03 FILLER       PIC X(28) VALUE "0010åŸ¼çŽ‰ã€€åéƒŽ          0350".
        01  TEST-DATA-R   REDEFINES TEST-DATA.
          03  TEST-TBL    OCCURS  10.
            05  TEST-NO             PIC S9(04).
@@ -96,13 +96,13 @@
       *    INSERT ROWS USING LITERAL
            EXEC SQL
       *         INSERT INTO EMP VALUES (46, 'KAGOSHIMA ROKURO', -320)
-               INSERT INTO EMP VALUES (46, 'Ž­Ž™“‡@˜Z˜Y', -320)
+               INSERT INTO EMP VALUES (46, 'é¹¿å…å³¶ã€€å…­éƒŽ', -320)
            END-EXEC.
            IF  SQLCODE NOT = ZERO PERFORM ERROR-RTN.
 
            EXEC SQL
       *         INSERT INTO EMP VALUES (47, 'OKINAWA SHICHIRO', 480)
-               INSERT INTO EMP VALUES (47, '‰«“ê@Žµ˜Y', 480)
+               INSERT INTO EMP VALUES (47, 'æ²–ç¸„ã€€ä¸ƒéƒŽ', 480)
            END-EXEC.
            IF  SQLCODE NOT = ZERO PERFORM ERROR-RTN.
 
