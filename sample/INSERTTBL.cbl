@@ -28,16 +28,16 @@
       *   03 FILLER       PIC X(28) VALUE "0008IBARAKI HACHIRO     0050".
       *   03 FILLER       PIC X(28) VALUE "0009GUMMA KURO          020p".
       *   03 FILLER       PIC X(28) VALUE "0010SAITAMA JURO        0350".
-         03 FILLER       PIC X(28) VALUE "0001北海　太郎          0400".
-         03 FILLER       PIC X(28) VALUE "0002青森　次郎          0350".
-         03 FILLER       PIC X(28) VALUE "0003秋田　三郎          0300".
-         03 FILLER       PIC X(28) VALUE "0004岩手　四郎          025p".
-         03 FILLER       PIC X(28) VALUE "0005宮城　五郎          020p".
-         03 FILLER       PIC X(28) VALUE "0006福島　六郎          0150".
-         03 FILLER       PIC X(28) VALUE "0007栃木　七郎          010p".
-         03 FILLER       PIC X(28) VALUE "0008茨城　八郎          0050".
-         03 FILLER       PIC X(28) VALUE "0009群馬　九郎          020p".
-         03 FILLER       PIC X(28) VALUE "0010埼玉　十郎          0350".
+         03 FILLER  PIC X(28) VALUE "0001北海　太郎          0400".
+         03 FILLER  PIC X(28) VALUE "0002青森　次郎          0350".
+         03 FILLER  PIC X(28) VALUE "0003秋田　三郎          0300".
+         03 FILLER  PIC X(28) VALUE "0004岩手　四郎          025p".
+         03 FILLER  PIC X(28) VALUE "0005宮城　五郎          020p".
+         03 FILLER  PIC X(28) VALUE "0006福島　六郎          0150".
+         03 FILLER  PIC X(28) VALUE "0007栃木　七郎          010p".
+         03 FILLER  PIC X(28) VALUE "0008茨城　八郎          0050".
+         03 FILLER  PIC X(28) VALUE "0009群馬　九郎          020p".
+         03 FILLER  PIC X(28) VALUE "0010埼玉　十郎          0350".
        01  TEST-DATA-R   REDEFINES TEST-DATA.
          03  TEST-TBL    OCCURS  10.
            05  TEST-NO             PIC S9(04).
