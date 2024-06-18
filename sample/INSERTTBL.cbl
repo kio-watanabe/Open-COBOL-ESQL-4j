@@ -18,26 +18,26 @@
        WORKING-STORAGE             SECTION.
        01  TEST-DATA.
                                        *>"---+++++++++++++++++++++----"
-      *   03 FILLER       PIC X(28) VALUE "0001HOKKAI TARO         0400".
-      *   03 FILLER       PIC X(28) VALUE "0002AOMORI JIRO         0350".
-      *   03 FILLER       PIC X(28) VALUE "0003AKITA SABURO        0300".
-      *   03 FILLER       PIC X(28) VALUE "0004IWATE SHIRO         025p".
-      *   03 FILLER       PIC X(28) VALUE "0005MIYAGI GORO         020p".
-      *   03 FILLER       PIC X(28) VALUE "0006FUKUSHIMA RIKURO    0150".
-      *   03 FILLER       PIC X(28) VALUE "0007TOCHIGI SHICHIRO    010p".
-      *   03 FILLER       PIC X(28) VALUE "0008IBARAKI HACHIRO     0050".
-      *   03 FILLER       PIC X(28) VALUE "0009GUMMA KURO          020p".
-      *   03 FILLER       PIC X(28) VALUE "0010SAITAMA JURO        0350".
-         03 FILLER       PIC X(28) VALUE "0001ñkäCÅ@ëæòY          0400".
-         03 FILLER       PIC X(28) VALUE "0002ê¬êXÅ@éüòY          0350".
-         03 FILLER       PIC X(28) VALUE "0003èHìcÅ@éOòY          0300".
-         03 FILLER       PIC X(28) VALUE "0004ä‚éËÅ@élòY          025p".
-         03 FILLER       PIC X(28) VALUE "0005ã{èÈÅ@å‹òY          020p".
-         03 FILLER       PIC X(28) VALUE "0006ïüìáÅ@òZòY          0150".
-         03 FILLER       PIC X(28) VALUE "0007ì»ñÿÅ@éµòY          010p".
-         03 FILLER       PIC X(28) VALUE "0008àÔèÈÅ@î™òY          0050".
-         03 FILLER       PIC X(28) VALUE "0009åQînÅ@ã„òY          020p".
-         03 FILLER       PIC X(28) VALUE "0010çÈã Å@è\òY          0350".
+         03 FILLER       PIC X(28) VALUE "0001HOKKAI TARO         0400".
+         03 FILLER       PIC X(28) VALUE "0002AOMORI JIRO         0350".
+         03 FILLER       PIC X(28) VALUE "0003AKITA SABURO        0300".
+         03 FILLER       PIC X(28) VALUE "0004IWATE SHIRO         025p".
+         03 FILLER       PIC X(28) VALUE "0005MIYAGI GORO         020p".
+         03 FILLER       PIC X(28) VALUE "0006FUKUSHIMA RIKURO    0150".
+         03 FILLER       PIC X(28) VALUE "0007TOCHIGI SHICHIRO    010p".
+         03 FILLER       PIC X(28) VALUE "0008IBARAKI HACHIRO     0050".
+         03 FILLER       PIC X(28) VALUE "0009GUMMA KURO          020p".
+         03 FILLER       PIC X(28) VALUE "0010SAITAMA JURO        0350".
+      *  03 FILLER       PIC X(28) VALUE "0001ÂåóÊµ∑„ÄÄÂ§™ÈÉé          0400".
+      *  03 FILLER       PIC X(28) VALUE "0002ÈùíÊ£Æ„ÄÄÊ¨°ÈÉé          0350".
+      *  03 FILLER       PIC X(28) VALUE "0003ÁßãÁî∞„ÄÄ‰∏âÈÉé          0300".
+      *  03 FILLER       PIC X(28) VALUE "0004Â≤©Êâã„ÄÄÂõõÈÉé          025p".
+      *  03 FILLER       PIC X(28) VALUE "0005ÂÆÆÂüé„ÄÄ‰∫îÈÉé          020p".
+      *  03 FILLER       PIC X(28) VALUE "0006Á¶èÂ≥∂„ÄÄÂÖ≠ÈÉé          0150".
+      *  03 FILLER       PIC X(28) VALUE "0007Ê†ÉÊú®„ÄÄ‰∏ÉÈÉé          010p".
+      *  03 FILLER       PIC X(28) VALUE "0008Ëå®Âüé„ÄÄÂÖ´ÈÉé          0050".
+      *  03 FILLER       PIC X(28) VALUE "0009Áæ§È¶¨„ÄÄ‰πùÈÉé          020p".
+      *  03 FILLER       PIC X(28) VALUE "0010ÂüºÁéâ„ÄÄÂçÅÈÉé          0350".
        01  TEST-DATA-R   REDEFINES TEST-DATA.
          03  TEST-TBL    OCCURS  10.
            05  TEST-NO             PIC S9(04).
@@ -69,7 +69,7 @@
       *    CONNECT
            MOVE  "testdb"          TO   DBNAME.
            MOVE  "postgres"        TO   USERNAME.
-           MOVE  "password"        TO   PASSWD.
+           MOVE  SPACE             TO   PASSWD.
            EXEC SQL
                CONNECT :USERNAME IDENTIFIED BY :PASSWD USING :DBNAME 
            END-EXEC.
@@ -95,14 +95,14 @@
            
       *    INSERT ROWS USING LITERAL
            EXEC SQL
-      *         INSERT INTO EMP VALUES (46, 'KAGOSHIMA ROKURO', -320)
-               INSERT INTO EMP VALUES (46, 'é≠éôìáÅ@òZòY', -320)
+               INSERT INTO EMP VALUES (46, 'KAGOSHIMA ROKURO', -320)
+      *         INSERT INTO EMP VALUES (46, 'ÈπøÂÖêÂ≥∂„ÄÄÂÖ≠ÈÉé', -320)
            END-EXEC.
            IF  SQLCODE NOT = ZERO PERFORM ERROR-RTN.
 
            EXEC SQL
-      *         INSERT INTO EMP VALUES (47, 'OKINAWA SHICHIRO', 480)
-               INSERT INTO EMP VALUES (47, 'â´ìÍÅ@éµòY', 480)
+               INSERT INTO EMP VALUES (47, 'OKINAWA SHICHIRO', 480)
+      *         INSERT INTO EMP VALUES (47, 'Ê≤ñÁ∏Ñ„ÄÄ‰∏ÉÈÉé', 480)
            END-EXEC.
            IF  SQLCODE NOT = ZERO PERFORM ERROR-RTN.
 
