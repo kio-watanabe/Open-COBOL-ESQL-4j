@@ -73,11 +73,11 @@ jobs:
       working-directory: win
       run: ./install.ps1
 
-    # - name: Set password of SQL
-    #   working-directory: sample
-    #   run: |
-    #     (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content FETCHTBL.cbl
-    #     (Get-Content INSERTTBL.cbl -encoding utf8) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content -encoding utf8  INSERTTBL.cbl
+    - name: Set password of SQL
+      working-directory: sample
+      run: |
+        (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content FETCHTBL.cbl
+        (Get-Content INSERTTBL.cbl -encoding utf8) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content -encoding utf8  INSERTTBL.cbl
    
     - name: Test SQL connection
       working-directory: sample
