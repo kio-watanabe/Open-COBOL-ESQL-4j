@@ -92,6 +92,10 @@ jobs:
         java INSERTTBL.java
         java FETCHTBL.java > sample-result
         type sample-result
+
+    - name: Compare result of test
+      working-directory: sample
+      run: |
         fc /b .\sample-result ..\win\sample-correct > test-result
         findstr "no differences encountered" test-result
       shell: cmd
