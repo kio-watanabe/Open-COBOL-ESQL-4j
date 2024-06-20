@@ -92,5 +92,5 @@ jobs:
         java INSERTTBL.java
         java FETCHTBL.java > sample-result
         type sample-result
-        Compare-Object -ReferenceObject (Get-Content -Path sample-result) -DifferenceObject (Get-Content -Path ../win/sample-correct) > test-result
-        if ((Get-Content -Path test-result) -ne $null){ exit(-1) }
+        fc /b sample-result ../win/sample-correct > test-result
+        findstr "no differences encountered" test-result
