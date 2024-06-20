@@ -97,5 +97,6 @@ jobs:
       working-directory: sample
       run: |
         fc /b .\sample-result ..\win\sample-correct > test-result
+        type test-result
         findstr "no differences encountered" test-result
       shell: cmd
