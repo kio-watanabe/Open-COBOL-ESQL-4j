@@ -92,5 +92,5 @@ jobs:
         java INSERTTBL.java
         java FETCHTBL.java > sample-result
         type sample-result
-        fc /b sample-result ../win/sample-correct > test-result
+        fc /b .\sample-result ..\win\sample-correct > test-result
         findstr "no differences encountered" test-result
