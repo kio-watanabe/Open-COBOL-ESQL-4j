@@ -77,7 +77,7 @@ jobs:
       working-directory: sample
       run: |
         (Get-Content FETCHTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content FETCHTBL.cbl
-        (Get-Content -encoding default INSERTTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content -encoding default INSERTTBL.cbl
+        (Get-Content -encoding utf8 INSERTTBL.cbl) | foreach { $_ -replace "MOVE  SPACE             TO   PASSWD","MOVE  `"password`"        TO   PASSWD" } | Set-Content -encoding utf8 INSERTTBL.cbl
    
     - name: Test SQL connection
       working-directory: sample
