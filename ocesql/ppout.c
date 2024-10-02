@@ -172,7 +172,7 @@ void outsqlfiller(struct cb_exec_list *wk_head_p) {
     if (wk_head_p->sql_list) {
 
       i++;
-      com_strcpy(out, sizeof(out), "OCESQL 01  ");
+      com_strcpy(out, sizeof(out), "OCESQL 01  "); //dbg: copy "sqlca.cbl".以下の変数定義を出力している。
 
       com_strcat(out, sizeof(out), wk_head_p->sqlName);
       com_strcat(out, sizeof(out), ".");
@@ -1359,6 +1359,7 @@ void ppbuff(struct cb_exec_list *list) {
   char buff[60];
 
   l = list;
+  //printf("dbg: l->commandName=%s\n", l->commandName);
   if (ppoutcontext(list) == 1)
     return;
 
@@ -1379,7 +1380,7 @@ void ppbuff(struct cb_exec_list *list) {
       strcmp(l->commandName, "WORKING_BEGIN") == 0) {
     return;
   }
-
+  
   if (strcmp(l->commandName, "WORKING_END") == 0) {
     struct cb_exec_list *wk_head = l;
     outsqlfiller(wk_head);
@@ -1981,7 +1982,9 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
         continue;
       }
       size_t len;
+        
       if (head) {
+        //printf("dbg: l->commandName=%s, l->startLine=%d, l->endLine=%d, lineNUM=%d\n", l->commandName, l->startLine, l->endLine, lineNUM);
         if (l->startLine <= lineNUM && l->endLine >= lineNUM) {
           if (strcmp(l->commandName, "WORKING_END") == 0) {
             ppbuff(l);
@@ -2002,36 +2005,64 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
           len = strlen(outbuff);
           fwrite(outbuff, len, 1, outfile);
 
+          if(strstr(inbuff, "\n") == NULL){
+            fputc('\n', outfile);
+          }
           if (EOFflg == 1) {
             fputc('\n', outfile);
           }
-        } else {
-          if (lineNUM - l->endLine == 1) {
+
+          if(lineNUM == l->endLine){
             if (strcmp(l->commandName, "WORKING_END")) {
+              //printf("dbg: l->commandName=%s\n", l->commandName);
               ppbuff(l);
             }
-            if (l->next != NULL)
-              l = l->next;
 
-            if (l->startLine <= lineNUM && l->endLine >= lineNUM &&
-                (strcmp(l->commandName, "WORKING_BEGIN") != 0 &&
-                 strcmp(l->commandName, "WORKING_END") != 0)) {
-              inbuff[0] = 'O';
-              inbuff[1] = 'C';
-              inbuff[2] = 'E';
-              inbuff[3] = 'S';
-              inbuff[4] = 'Q';
-              inbuff[5] = 'L';
-              inbuff[6] = '*';
+            if (l->next != NULL){
+              l = l->next;
             }
-            outbuff = inbuff;
-            len = strlen(outbuff);
-            fwrite(outbuff, len, 1, outfile);
-          } else {
-            outbuff = inbuff;
-            len = strlen(outbuff);
-            fwrite(outbuff, len, 1, outfile);
+
+            // outbuff = inbuff;
+            // len = strlen(outbuff);
+            // fwrite(outbuff, len, 1, outfile);
           }
+        } 
+        else {
+          outbuff = inbuff;
+          len = strlen(outbuff);
+          fwrite(outbuff, len, 1, outfile);
+          //if (lineNUM - l->endLine == 1) {
+            // if (strcmp(l->commandName, "WORKING_END")) {
+            //   printf("dbg: l->commandName=%s\n", l->commandName);
+            //   ppbuff(l);
+            // }
+            // if(strcmp(l->next->commandName, "WORKING_END") == 0){
+            //   ppbuff(l->next);
+            //   //printf("dbg: l->commandName=%s, working_end\n", l->commandName);
+            // }
+            // if (l->next != NULL){
+            //   l = l->next;
+            // }
+
+            // if (l->startLine <= lineNUM && l->endLine >= lineNUM &&
+            //     (strcmp(l->commandName, "WORKING_BEGIN") != 0 &&
+            //      strcmp(l->commandName, "WORKING_END") != 0)) {
+            //   inbuff[0] = 'O';
+            //   inbuff[1] = 'C';
+            //   inbuff[2] = 'E';
+            //   inbuff[3] = 'S';
+            //   inbuff[4] = 'Q';
+            //   inbuff[5] = 'L';
+            //   inbuff[6] = '*';
+            // }
+          //   outbuff = inbuff;
+          //   len = strlen(outbuff);
+          //   fwrite(outbuff, len, 1, outfile);
+          // } else {
+          //   outbuff = inbuff;
+          //   len = strlen(outbuff);
+          //   fwrite(outbuff, len, 1, outfile);
+          // }
         }
       } else {
         outbuff = inbuff;
@@ -2080,6 +2111,9 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head) {
         outbuff = inbuff;
         len = strlen(outbuff);
 
+        // if(strstr(inbuff, "\n") == NULL){
+				// 		fputc('\n', outfile);
+				// }
         if (EOFflg == 1) {
           fputc('\n', outfile);
         }
