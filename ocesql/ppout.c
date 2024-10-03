@@ -2072,9 +2072,6 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head) {
         outbuff = inbuff;
         len = strlen(outbuff);
 
-        // if(strstr(inbuff, "\n") == NULL){
-				// 		fputc('\n', outfile);
-				// }
         if (EOFflg == 1) {
           fputc('\n', outfile);
         }
