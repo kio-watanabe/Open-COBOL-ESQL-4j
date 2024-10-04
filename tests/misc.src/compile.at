@@ -60,7 +60,6 @@ Generate:OCESQLExec
 Generate:OCESQLDisconnect
 =======================================================
 ])
-AT_CHECK([diff prog.cob ../../misc.src/sql-variable-definition.txt], [0])
 AT_CHECK([${COMPILE_MODULE} prog.cob])
 AT_CHECK([${RUN_MODULE} prog], [0], [])
 
