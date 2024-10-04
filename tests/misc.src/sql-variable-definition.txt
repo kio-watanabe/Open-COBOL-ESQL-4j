@@ -1,0 +1,83 @@
+
+       IDENTIFICATION              DIVISION.
+      ******************************************************************
+       PROGRAM-ID.                 prog.
+      ******************************************************************
+       DATA                        DIVISION.
+      ******************************************************************
+       WORKING-STORAGE             SECTION.
+
+OCESQL*EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  DBNAME                  PIC  X(30) VALUE SPACE.
+       01  USERNAME                PIC  X(30) VALUE SPACE.
+       01  PASSWD                  PIC  X(10) VALUE SPACE.
+
+       01 DB-ENDPOINT PIC X(120) VALUE "aaa".
+       01 DB-PASSWORD PIC X(120) VALUE "bbb".
+       01 DB-DATABASE PIC X(30) VALUE "ccc".
+       01 DB-USER PIC X(50) VALUE "ddd".
+       01 DB-PORT PIC X(5) VALUE "12345".
+
+OCESQL*EXEC SQL END DECLARE SECTION END-EXEC.
+OCESQL*EXEC SQL INCLUDE SQLCA END-EXEC.
+OCESQL     copy "sqlca.cbl".
+OCESQL*
+OCESQL 01  SQ0001.
+OCESQL     02  FILLER PIC X(24) VALUE
+OCESQL     "DROP TABLE IF EXISTS EMP".
+OCESQL     02  FILLER PIC X(1) VALUE X"00".
+OCESQL*
+OCESQL 01  SQ0002.
+OCESQL     02  FILLER PIC X(24) VALUE
+OCESQL     "DROP TABLE IF EXISTS EMP".
+OCESQL     02  FILLER PIC X(1) VALUE X"00".
+OCESQL*
+OCESQL 01  SQ0003.
+OCESQL     02  FILLER PIC X(14) VALUE
+OCESQL     "DISCONNECT ALL".
+OCESQL     02  FILLER PIC X(1) VALUE X"00".
+OCESQL*
+       PROCEDURE                   DIVISION.
+       MAIN-RTN.
+           MOVE  "testdb@localhost:5432"
+             TO DBNAME.
+           MOVE  "main_user"
+             TO USERNAME.
+           MOVE  "password"
+             TO PASSWD.
+
+OCESQL*    EXEC SQL
+OCESQL*        CONNECT :USERNAME IDENTIFIED BY :PASSWD USING :DBNAME
+OCESQL*    END-EXEC.
+OCESQL     CALL "OCESQLConnect" USING
+OCESQL          BY REFERENCE SQLCA
+OCESQL          BY REFERENCE USERNAME
+OCESQL          BY VALUE 30
+OCESQL          BY REFERENCE PASSWD
+OCESQL          BY VALUE 10
+OCESQL          BY REFERENCE DBNAME
+OCESQL          BY VALUE 30
+OCESQL     END-CALL.
+
+OCESQL*    EXEC SQL
+OCESQL*        DROP TABLE IF EXISTS EMP
+OCESQL*    END-EXEC.
+OCESQL     CALL "OCESQLExec" USING
+OCESQL          BY REFERENCE SQLCA
+OCESQL          BY REFERENCE SQ0001
+OCESQL     END-CALL.
+
+OCESQL*    EXEC SQL
+OCESQL*        DROP TABLE IF EXISTS EMP
+OCESQL*    END-EXEC.
+OCESQL     CALL "OCESQLExec" USING
+OCESQL          BY REFERENCE SQLCA
+OCESQL          BY REFERENCE SQ0002
+OCESQL     END-CALL.
+
+OCESQL*    EXEC SQL
+OCESQL*        DISCONNECT ALL
+OCESQL*    END-EXEC.
+OCESQL     CALL "OCESQLDisconnect" USING
+OCESQL          BY REFERENCE SQLCA
+OCESQL     END-CALL.
