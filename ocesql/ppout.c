@@ -1379,7 +1379,7 @@ void ppbuff(struct cb_exec_list *list) {
       strcmp(l->commandName, "WORKING_BEGIN") == 0) {
     return;
   }
-  
+
   if (strcmp(l->commandName, "WORKING_END") == 0) {
     struct cb_exec_list *wk_head = l;
     outsqlfiller(wk_head);
@@ -1981,7 +1981,6 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
         continue;
       }
       size_t len;
-        
       if (head) {
         if (l->startLine <= lineNUM && l->endLine >= lineNUM) {
           if (strcmp(l->commandName, "WORKING_END") == 0) {
@@ -2003,14 +2002,14 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
           len = strlen(outbuff);
           fwrite(outbuff, len, 1, outfile);
 
-          if(strstr(inbuff, "\n") == NULL){
+          if (strstr(inbuff, "\n") == NULL){
             fputc('\n', outfile);
           }
           if (EOFflg == 1) {
             fputc('\n', outfile);
           }
 
-          if(lineNUM == l->endLine){
+          if (lineNUM == l->endLine){
             if (strcmp(l->commandName, "WORKING_END")) {
               ppbuff(l);
             }
