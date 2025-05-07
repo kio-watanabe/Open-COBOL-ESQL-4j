@@ -6,7 +6,6 @@ on:
     types: [opened, reopened, review_requested, synchronize]
   workflow_dispatch:
   # Run tests 10:00 PM (JST) every day
-  
   schedule:
     - cron: '0 13 * * *'
 
@@ -23,17 +22,17 @@ jobs:
   
   coverage:
     needs: check-workflows
-    if: github.event_name != 'schedule'
+    if: github.event_name != 'schedule'  || github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/coverage.yml
    
   static_analysis:
     needs: check-workflows
-    if: github.event_name != 'schedule'
+    if: github.event_name != 'schedule'  || github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/static_analysis.yml 
 
   doc:
     needs: check-workflows
-    if: github.event_name != 'schedule'
+    if: github.event_name != 'schedule'  || github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/doc.yml
     
   windows-build:
