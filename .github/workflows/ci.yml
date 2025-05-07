@@ -6,20 +6,18 @@ on:
     types: [opened, reopened, review_requested, synchronize]
   workflow_dispatch:
   # Run tests 10:00 PM (JST) every day
-  schedule:
-    - cron: '0 13 * * *'
+  # schedule:
+  #   - cron: '0 13 * * *'
 
 permissions:
   contents: read
 
 jobs:
   check-workflows:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/check-workflows.yml
 
   test:
     needs: check-workflows
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/test.yml
   
   coverage:
@@ -39,7 +37,6 @@ jobs:
     
   windows-build:
     needs: check-workflows
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     uses: ./.github/workflows/windows-build.yml
     with:
       upload-artifacts: false
