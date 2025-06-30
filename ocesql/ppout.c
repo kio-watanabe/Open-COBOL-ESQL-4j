@@ -139,7 +139,8 @@ void sql_string(struct cb_exec_list *wk_text) {
 
   int sqllen = strlen(sqlloop);
   fprintf(outfile, "OCESQL     02  FILLER PIC X(%d) VALUE", sqllen);
-
+  printf("dbg: sqlbody = %s\n", wk_text->sqlBody);
+ 
   int i = 0;
   const int maximum_chars_in_single_line = 58;
   while (i < sqllen) {
@@ -1987,6 +1988,7 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
             ppbuff(l);
           }
 
+          //printf("dbg: inbuff = %s\n", inbuff);
           if (strcmp(l->commandName, "WORKING_BEGIN") != 0 &&
               strcmp(l->commandName, "WORKING_END") != 0) {
             inbuff[0] = 'O';
@@ -1997,7 +1999,6 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
             inbuff[5] = 'L';
             inbuff[6] = '*';
           }
-
           outbuff = inbuff;
           len = strlen(outbuff);
           fwrite(outbuff, len, 1, outfile);

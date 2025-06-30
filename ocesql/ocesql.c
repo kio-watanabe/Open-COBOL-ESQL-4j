@@ -134,6 +134,7 @@ struct cb_sql_list *cb_text_list_add(struct cb_sql_list *list, char *text) {
 
   p = malloc(sizeof(struct cb_sql_list));
   p->sqltext = com_strdup(text);
+  //printf("dbg: sqltext = %s\n", p->sqltext);
 
   p->next = NULL;
 
