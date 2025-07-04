@@ -19,9 +19,9 @@
 
 #include "ocesql.h"
 #include "ocesqlutil.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 
 char inbuff[256];
 char out[256];
@@ -35,8 +35,7 @@ int lineNUM = 0;
 int japflg = 0;
 int charcount = 0;
 
-char *SQcount(int i)
-{
+char *SQcount(int i) {
   char NUM[4];
   NUM[0] = '0';
   NUM[1] = '0';
@@ -44,13 +43,11 @@ char *SQcount(int i)
   NUM[3] = 0;
   if (i < 10)
     NUM[2] = i + 48;
-  if (i >= 10 && i <= 99)
-  {
+  if (i >= 10 && i <= 99) {
     NUM[1] = (i / 10) + 48;
     NUM[2] = (i % 10) + 48;
   }
-  if (i >= 100 && i <= 999)
-  {
+  if (i >= 100 && i <= 999) {
     NUM[0] = (i / 100) + 48;
     NUM[1] = (i % 100 / 10) + 48;
     NUM[2] = (i % 100 % 10) + 48;
@@ -58,8 +55,7 @@ char *SQcount(int i)
   return com_strdup(NUM);
 }
 
-char *substring(int len, char *wk_str, int flag_end)
-{
+char *substring(int len, char *wk_str, int flag_end) {
   char wkstr[70];
   int n = 0;
   int k;
@@ -67,58 +63,45 @@ char *substring(int len, char *wk_str, int flag_end)
   int h;
   int len2;
 
-  for (n = 0; n < 70; n++)
-  {
+  for (n = 0; n < 70; n++) {
     wkstr[n] = '\0';
   }
   dex = len;
 
   len2 = strlen(wk_str);
-  if (len >= len2)
-  {
+  if (len >= len2) {
     EOFFLG = 1;
     dex = strlen(wk_str);
   }
   h = 1;
-  if (!EOFFLG)
-  {
-    for (h = 1; h < dex; h++)
-    {
-      if (!check_Dchar(wk_str[dex - h]))
-      {
+  if (!EOFFLG) {
+    for (h = 1; h < dex; h++) {
+      if (!check_Dchar(wk_str[dex - h])) {
         break;
       }
     }
   }
-  if (h >= 2)
-  {
-    if (!(h % 2))
-    {
-      if (flag_end == 1)
-      {
+  if (h >= 2) {
+    if (!(h % 2)) {
+      if (flag_end == 1) {
         dex--;
-      }
-      else
-      {
+      } else {
         dex++;
       }
     }
   }
 
-  for (n = 0; n < dex; n++)
-  {
+  for (n = 0; n < dex; n++) {
     wkstr[n] = wk_str[n];
   }
-  for (k = n; wk_str[k] != '\0'; k++)
-  {
+  for (k = n; wk_str[k] != '\0'; k++) {
     wk_str[k - n] = wk_str[k];
   }
   wk_str[k - n] = '\0';
   return com_strdup(wkstr);
 }
 
-void sql_string(struct cb_exec_list *wk_text)
-{
+void sql_string(struct cb_exec_list *wk_text) {
   char sqlstr[5][256];
 
   char *sqlloop;
@@ -130,12 +113,11 @@ void sql_string(struct cb_exec_list *wk_text)
   sqlbody_len = strlen(wk_text->sqlBody);
 
   sqlloop = (char *)malloc(sqlbody_len + 1);
-  if (sqlloop == NULL)
-  {
+  if (sqlloop == NULL) {
     _printlog("memory allocation failed.\n");
     return;
   }
- 
+
   strcpy(sqlloop, wk_text->sqlBody);
   sqllen = strlen(sqlloop);
   fprintf(outfile, "OCESQL     02  FILLER PIC X(%d) VALUE", sqllen);
@@ -145,18 +127,15 @@ void sql_string(struct cb_exec_list *wk_text)
   const char *sql_end = sqlloop + sqllen;
   int is_first_chr = 1;
 
-  while (p_sql < sql_end)
-  {
+  while (p_sql < sql_end) {
     // Store the string up to the newline in a temp buffer
     const char *p_line_end = p_sql;
-    while (p_line_end < sql_end && *p_line_end != '\n' && *p_line_end != '\r')
-    {
+    while (p_line_end < sql_end && *p_line_end != '\n' && *p_line_end != '\r') {
       p_line_end++;
     }
     size_t line_len = p_line_end - p_sql;
     char *line_buff = (char *)malloc(line_len + 1);
-    if (line_buff == NULL)
-    {
+    if (line_buff == NULL) {
       _printlog("memory allocation failed.\n");
       free(sqlloop);
       return;
@@ -174,23 +153,22 @@ void sql_string(struct cb_exec_list *wk_text)
     char *a_area = line_buff;
     int i;
     int a_len = 4;
-    for(i = 0; i < a_len && line_buff[i] != '\n'; i++) {  
-      if(!isspace((unsigned char)line_buff[i])) {
+    for (i = 0; i < a_len && line_buff[i] != '\n'; i++) {
+      if (!isspace((unsigned char)line_buff[i])) {
         break;
       }
     }
-    if(i == a_len){
+    if (i == a_len) {
       line_len = strlen(line_buff + a_len);
       memmove(line_buff, line_buff + a_len, line_len + 1);
-    }else{
+    } else {
       line_len = strlen(line_buff + 1);
       memmove(line_buff, line_buff + 1, line_len + 1);
     }
 
-    //  Output strings that fit within the B area to file. 
+    //  Output strings that fit within the B area to file.
     // Output overflow characters to the next line.
-    if (strlen(line_buff) > 0)
-    {
+    if (strlen(line_buff) > 0) {
       const char *p_line = line_buff;
       while (*p_line) {
         if (is_first_chr) {
@@ -201,10 +179,13 @@ void sql_string(struct cb_exec_list *wk_text)
         }
 
         size_t p_line_len = strlen(p_line);
-        size_t len_to_write =  (p_line_len > maximum_chars_in_single_line) ? maximum_chars_in_single_line : p_line_len;
-      
+        size_t len_to_write = (p_line_len > maximum_chars_in_single_line)
+                                  ? maximum_chars_in_single_line
+                                  : p_line_len;
+
         // Do not split 2-bytes character into different lines
-        if(len_to_write == maximum_chars_in_single_line && p_line_len > maximum_chars_in_single_line) {
+        if (len_to_write == maximum_chars_in_single_line &&
+            p_line_len > maximum_chars_in_single_line) {
           len_to_write--;
         }
 
@@ -220,7 +201,7 @@ void sql_string(struct cb_exec_list *wk_text)
     }
   }
 
-  if(is_first_chr) {
+  if (is_first_chr) {
     fprintf(outfile, " \"\".");
   } else {
     fprintf(outfile, "\".");
@@ -366,8 +347,7 @@ void ppoutputopen(struct cb_exec_list *list) {
   return;
 }
 
-void ppoutputconnect(struct cb_exec_list *list)
-{
+void ppoutputconnect(struct cb_exec_list *list) {
   char buff[256];
   struct cb_hostreference_list *host_list;
   int l, m, n;
@@ -375,61 +355,46 @@ void ppoutputconnect(struct cb_exec_list *list)
   int list_count = 0;
 
   host_list = list->host_list;
-  while (host_list)
-  {
+  while (host_list) {
     list_count++;
     host_list = host_list->next;
   }
-  if (list_count == 0)
-  {
-    if (list->conn_use_other_db)
-    {
+  if (list_count == 0) {
+    if (list->conn_use_other_db) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLIDConnectShort\" USING\n", " ");
       fputs(buff, outfile);
       _printlog("Generate:OCESQLIDConnectShort");
-    }
-    else
-    {
+    } else {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLConnectShort\" USING\n", " ");
       fputs(buff, outfile);
       _printlog("Generate:OCESQLConnectShort");
     }
-  }
-  else if (list_count == 1)
-  {
-    if (list->conn_use_other_db)
-    {
+  } else if (list_count == 1) {
+    if (list->conn_use_other_db) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLIDConnectInformal\" USING\n", " ");
       fputs(buff, outfile);
       _printlog("Generate:OCESQLIDConnectInformal");
-    }
-    else
-    {
+    } else {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLConnectInformal\" USING\n", " ");
       fputs(buff, outfile);
       _printlog("Generate:OCESQLConnectInformal");
     }
-  }
-  else
-  {
-    if (list->conn_use_other_db)
-    {
+  } else {
+    if (list->conn_use_other_db) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLIDConnect\" USING\n", " ");
       fputs(buff, outfile);
       _printlog("Generate:OCESQLIDConnect");
-    }
-    else
-    {
+    } else {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLConnect\" USING\n",
                   " ");
@@ -442,11 +407,9 @@ void ppoutputconnect(struct cb_exec_list *list)
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     iret = gethostvarianttype(list->dbName, &l, &m, &n);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -462,11 +425,9 @@ void ppoutputconnect(struct cb_exec_list *list)
   }
 
   host_list = list->host_list;
-  while (host_list)
-  {
+  while (host_list) {
     iret = gethostvarianttype(host_list->hostreference, &l, &m, &n);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(host_list->hostreference, host_list->lineno, buff);
@@ -486,8 +447,7 @@ void ppoutputconnect(struct cb_exec_list *list)
 }
 
 void _ppoutputparam(char *varface, int type, int digits, int scale,
-                    int iteration)
-{
+                    int iteration) {
   char buff[256];
 
   memset(buff, 0, sizeof(buff));
@@ -507,13 +467,10 @@ void _ppoutputparam(char *varface, int type, int digits, int scale,
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY VALUE %d\n", " ", scale);
   fputs(buff, outfile);
   memset(buff, 0, sizeof(buff));
-  if (iteration > 0)
-  {
+  if (iteration > 0) {
     com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE %s(1)\n", " ",
                 varface);
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE %s\n", " ",
                 varface);
   }
@@ -526,8 +483,7 @@ void _ppoutputparam(char *varface, int type, int digits, int scale,
   return;
 }
 
-int ppoutputparam(struct cb_hostreference_list *host_list, int iteration)
-{
+int ppoutputparam(struct cb_hostreference_list *host_list, int iteration) {
   char buff[256];
   int type, digits, scale;
   int iret;
@@ -536,21 +492,18 @@ int ppoutputparam(struct cb_hostreference_list *host_list, int iteration)
   if (host_list == NULL)
     return count;
   iret = gethostvarianttype(host_list->hostreference, &type, &digits, &scale);
-  if (iret != 0)
-  {
+  if (iret != 0) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", iret);
     printerrormsg(host_list->hostreference, host_list->lineno, buff);
     return 0;
   }
 
-  if (type == HVARTYPE_GROUP)
-  {
+  if (type == HVARTYPE_GROUP) {
     struct cb_field *f;
 
     f = getfieldbyname(host_list->hostreference);
-    if (f == NULL)
-    {
+    if (f == NULL) {
       printmsg("%s:%d\n", host_list->hostreference, ERR_NOTDEF_WORKING);
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", ERR_NOTDEF_WORKING);
@@ -560,11 +513,9 @@ int ppoutputparam(struct cb_hostreference_list *host_list, int iteration)
 
     f = f->children;
 
-    while (f)
-    {
+    while (f) {
       iret = gethostvarianttype(f->sname, &type, &digits, &scale);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(f->sname, host_list->lineno, buff);
@@ -574,9 +525,7 @@ int ppoutputparam(struct cb_hostreference_list *host_list, int iteration)
       count++;
       f = f->sister;
     }
-  }
-  else
-  {
+  } else {
     _ppoutputparam(host_list->hostreference, type, digits, scale, iteration);
     count++;
   }
@@ -585,8 +534,7 @@ int ppoutputparam(struct cb_hostreference_list *host_list, int iteration)
 }
 
 void ppoutputresparam(char *varface, int type, int digits, int scale,
-                      int iteration)
-{
+                      int iteration) {
   char buff[256];
 
   memset(buff, 0, sizeof(buff));
@@ -606,13 +554,10 @@ void ppoutputresparam(char *varface, int type, int digits, int scale,
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY VALUE %d\n", " ", scale);
   fputs(buff, outfile);
   memset(buff, 0, sizeof(buff));
-  if (iteration > 0)
-  {
+  if (iteration > 0) {
     com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE %s(1)\n", " ",
                 varface);
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE %s\n", " ",
                 varface);
   }
@@ -625,8 +570,7 @@ void ppoutputresparam(char *varface, int type, int digits, int scale,
   return;
 }
 
-void ppoutputresgroup(struct cb_field *cf, int lineno, int iteration)
-{
+void ppoutputresgroup(struct cb_field *cf, int lineno, int iteration) {
   int type, digits, scale;
   int iret;
 
@@ -634,8 +578,7 @@ void ppoutputresgroup(struct cb_field *cf, int lineno, int iteration)
     return;
 
   iret = gethostvarianttype(cf->sname, &type, &digits, &scale);
-  if (iret != 0)
-  {
+  if (iret != 0) {
     char buff[256];
     printmsg("%s:%d\n", cf->sname, iret);
     memset(buff, 0, sizeof(buff));
@@ -644,25 +587,20 @@ void ppoutputresgroup(struct cb_field *cf, int lineno, int iteration)
     return;
   }
 
-  if (type == HVARTYPE_GROUP)
-  {
+  if (type == HVARTYPE_GROUP) {
     ppoutputresgroup(cf->children, lineno, iteration);
-  }
-  else
-  {
+  } else {
     ppoutputresparam(cf->sname, type, digits, scale, iteration);
   }
 
-  if (cf->sister != NULL)
-  {
+  if (cf->sister != NULL) {
     ppoutputresgroup(cf->sister, lineno, iteration);
   }
 
   return;
 }
 
-void ppoutputexecprepare(struct cb_exec_list *list)
-{
+void ppoutputexecprepare(struct cb_exec_list *list) {
   char buff[256];
   struct cb_hostreference_list *host_list;
   int type, digits, scale;
@@ -676,12 +614,10 @@ void ppoutputexecprepare(struct cb_exec_list *list)
 
   host_list = list->host_list;
   int count = 0;
-  if (host_list)
-  {
+  if (host_list) {
     int iret =
         gethostvarianttype(host_list->hostreference, &type, &digits, &scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       printmsg("%s:%d\n", host_list->hostreference, iret);
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
@@ -689,21 +625,17 @@ void ppoutputexecprepare(struct cb_exec_list *list)
       return;
     }
 
-    while (host_list)
-    {
+    while (host_list) {
       count += ppoutputparam(host_list, 0);
       host_list = host_list->next;
     }
   }
-  if (!list->conn_use_other_db)
-  {
+  if (!list->conn_use_other_db) {
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLExecPrepare\" USING\n", " ");
     fputs(buff, outfile);
     _printlog("Generate:OCESQLExecPrepare");
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLIDExecPrepare\" USING\n", " ");
     fputs(buff, outfile);
@@ -714,16 +646,14 @@ void ppoutputexecprepare(struct cb_exec_list *list)
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     int iret;
     int var_type;
     int var_len;
     int var_scale;
 
     iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -763,8 +693,7 @@ void ppoutputexecprepare(struct cb_exec_list *list)
   ppoutputendcall(list);
 }
 
-void ppoutputfetch(struct cb_exec_list *list)
-{
+void ppoutputfetch(struct cb_exec_list *list) {
   char buff[256];
   struct cb_res_hostreference_list *res_host_list;
   int type, digits, scale;
@@ -784,8 +713,7 @@ void ppoutputfetch(struct cb_exec_list *list)
 
   iret =
       gethostvarianttype(res_host_list->hostreference, &type, &digits, &scale);
-  if (iret != 0)
-  {
+  if (iret != 0) {
     printmsg("%s:%d\n", res_host_list->hostreference, iret);
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", iret);
@@ -793,13 +721,11 @@ void ppoutputfetch(struct cb_exec_list *list)
     return;
   }
 
-  if (type == HVARTYPE_GROUP)
-  {
+  if (type == HVARTYPE_GROUP) {
     struct cb_field *parent, *child;
 
     parent = getfieldbyname(res_host_list->hostreference);
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
       printmsg("%s:%d\n", res_host_list->hostreference, ERR_NOTDEF_WORKING);
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", ERR_NOTDEF_WORKING);
@@ -808,30 +734,25 @@ void ppoutputfetch(struct cb_exec_list *list)
     }
 
     child = parent->children;
-    if (parent->occurs)
-    {
+    if (parent->occurs) {
       iteration = parent->occurs;
       occurs_is_parent = 1;
       ppoutputresgroup(child, res_host_list->lineno, iteration);
       iret = get_host_group_length(child, &length);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(res_host_list->hostreference, res_host_list->lineno,
                       buff);
         return;
       }
-    }
-    else
-    {
+    } else {
       iteration = -1;
       occurs_is_parent = 0;
 
       iret = get_host_group_table_info(child, &iteration, &length);
       ppoutputresgroup(child, res_host_list->lineno, iteration);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(res_host_list->hostreference, res_host_list->lineno,
@@ -839,15 +760,11 @@ void ppoutputfetch(struct cb_exec_list *list)
         return;
       }
     }
-  }
-  else
-  {
-    while (res_host_list)
-    {
+  } else {
+    while (res_host_list) {
       iret = gethostvarianttype(res_host_list->hostreference, &type, &digits,
                                 &scale);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(res_host_list->hostreference, res_host_list->lineno,
@@ -860,8 +777,7 @@ void ppoutputfetch(struct cb_exec_list *list)
     }
   }
 
-  if (iteration)
-  {
+  if (iteration) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLSetHostTable\" USING\n", " ");
@@ -889,9 +805,7 @@ void ppoutputfetch(struct cb_exec_list *list)
                 "OCESQL%5sCALL \"OCESQLCursorFetchOccurs\" USING\n", " ");
     fputs(buff, outfile);
     _printlog("Generate:OCESQLCursorFetchOccurs");
-  }
-  else
-  {
+  } else {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLCursorFetchOne\" USING\n", " ");
@@ -922,8 +836,7 @@ void ppoutputfetch(struct cb_exec_list *list)
   ppoutputendcall(list);
 }
 
-void ppoutputcommit(struct cb_exec_list *list)
-{
+void ppoutputcommit(struct cb_exec_list *list) {
   char buff[256];
 
   memset(buff, 0, sizeof(buff));
@@ -935,14 +848,11 @@ void ppoutputcommit(struct cb_exec_list *list)
   fputs(buff, outfile);
 
   memset(buff, 0, sizeof(buff));
-  if (!list->conn_use_other_db)
-  {
+  if (!list->conn_use_other_db) {
     com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLExec\" USING\n",
                 " ");
     _printlog("Generate:COMMIT");
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLIDExec\" USING\n",
                 " ");
     _printlog("Generate:COMMITuseDBNAME");
@@ -953,16 +863,14 @@ void ppoutputcommit(struct cb_exec_list *list)
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     int iret;
     int var_type;
     int var_len;
     int var_scale;
 
     iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -995,8 +903,7 @@ void ppoutputcommit(struct cb_exec_list *list)
   return;
 }
 
-void ppoutputrollback(struct cb_exec_list *list)
-{
+void ppoutputrollback(struct cb_exec_list *list) {
   char buff[256];
 
   memset(buff, 0, sizeof(buff));
@@ -1008,14 +915,11 @@ void ppoutputrollback(struct cb_exec_list *list)
   fputs(buff, outfile);
 
   memset(buff, 0, sizeof(buff));
-  if (!list->conn_use_other_db)
-  {
+  if (!list->conn_use_other_db) {
     com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLExec\" USING\n",
                 " ");
     _printlog("Generate:ROLLBACK");
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLIDExec\" USING\n",
                 " ");
     _printlog("Generate:ROLLBACKuseDBNAME");
@@ -1026,16 +930,14 @@ void ppoutputrollback(struct cb_exec_list *list)
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     int iret;
     int var_type;
     int var_len;
     int var_scale;
 
     iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -1067,8 +969,7 @@ void ppoutputrollback(struct cb_exec_list *list)
   ppoutputendcall(list);
 }
 
-void ppoutputprepare(struct cb_exec_list *list)
-{
+void ppoutputprepare(struct cb_exec_list *list) {
   char buff[256];
   int l, m, n;
   int iret;
@@ -1094,16 +995,13 @@ void ppoutputprepare(struct cb_exec_list *list)
   fputs(buff, outfile);
 
   iret = gethostvarianttype(list->host_list->hostreference, &l, &m, &n);
-  if (iret != 0)
-  {
+  if (iret != 0) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", iret);
     printerrormsg(list->host_list->hostreference, list->host_list->lineno,
                   buff);
     return;
-  }
-  else if (l != HVARTYPE_GROUP)
-  {
+  } else if (l != HVARTYPE_GROUP) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", ERR_PREPARE_ISNT_GROUP);
     printerrormsg(list->host_list->hostreference, list->host_list->lineno,
@@ -1112,8 +1010,7 @@ void ppoutputprepare(struct cb_exec_list *list)
   }
 
   parent = getfieldbyname(list->host_list->hostreference);
-  if (parent == NULL)
-  {
+  if (parent == NULL) {
     printmsg("%s:%d\n", list->host_list->hostreference, ERR_NOTDEF_WORKING);
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", ERR_NOTDEF_WORKING);
@@ -1125,15 +1022,13 @@ void ppoutputprepare(struct cb_exec_list *list)
   child = parent->children;
   comp_varname_len = strlen(parent->sname) + 4 + TERMINAL_LENGTH;
   comp_varname = (char *)malloc(comp_varname_len * sizeof(char));
-  if (comp_varname == NULL)
-  {
+  if (comp_varname == NULL) {
     return;
   }
   memset(comp_varname, 0, comp_varname_len);
 
   com_sprintf(comp_varname, comp_varname_len, "%s-LEN", parent->sname);
-  if (strcmp(comp_varname, child->sname) != 0 || child->sister == NULL)
-  {
+  if (strcmp(comp_varname, child->sname) != 0 || child->sister == NULL) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", ERR_PREPARE_INVALID_PARAM);
     printerrormsg(list->host_list->hostreference, list->host_list->lineno,
@@ -1144,8 +1039,7 @@ void ppoutputprepare(struct cb_exec_list *list)
 
   memset(comp_varname, 0, comp_varname_len);
   com_sprintf(comp_varname, comp_varname_len, "%s-ARR", parent->sname);
-  if (strcmp(comp_varname, child->sister->sname) != 0)
-  {
+  if (strcmp(comp_varname, child->sister->sname) != 0) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "E%03d", ERR_PREPARE_INVALID_PARAM);
     printerrormsg(list->host_list->hostreference, list->host_list->lineno,
@@ -1167,19 +1061,15 @@ void ppoutputprepare(struct cb_exec_list *list)
   ppoutputendcall(list);
 }
 
-void ppoutputdisconnect(struct cb_exec_list *list)
-{
+void ppoutputdisconnect(struct cb_exec_list *list) {
   char buff[256];
 
   memset(buff, 0, sizeof(buff));
-  if (!list->conn_use_other_db)
-  {
+  if (!list->conn_use_other_db) {
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLDisconnect\" USING\n", " ");
     _printlog("Generate:OCESQLDisconnect");
-  }
-  else
-  {
+  } else {
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLIDDisconnect\" USING\n", " ");
     _printlog("Generate:OCESQLDisconnect");
@@ -1190,16 +1080,14 @@ void ppoutputdisconnect(struct cb_exec_list *list)
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     int iret;
     int var_type;
     int var_len;
     int var_scale;
 
     iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -1218,22 +1106,17 @@ void ppoutputdisconnect(struct cb_exec_list *list)
   ppoutputendcall(list);
 }
 
-void ppoutputother(struct cb_exec_list *list)
-{
+void ppoutputother(struct cb_exec_list *list) {
   char buff[256];
   struct cb_hostreference_list *host_list;
 
-  if (list->hostreferenceCount == 0)
-  {
+  if (list->hostreferenceCount == 0) {
     memset(buff, 0, sizeof(buff));
-    if (!list->conn_use_other_db)
-    {
+    if (!list->conn_use_other_db) {
       com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLExec\" USING\n",
                   " ");
       _printlog("Generate:OCESQLExec");
-    }
-    else
-    {
+    } else {
       com_sprintf(buff, sizeof(buff), "OCESQL%5sCALL \"OCESQLIDExec\" USING\n",
                   " ");
       _printlog("Generate:OCESQLIDExec");
@@ -1244,16 +1127,14 @@ void ppoutputother(struct cb_exec_list *list)
     com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
     fputs(buff, outfile);
 
-    if (list->conn_use_other_db)
-    {
+    if (list->conn_use_other_db) {
       int iret;
       int var_type;
       int var_len;
       int var_scale;
 
       iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(list->dbName, lineNUM, buff);
@@ -1292,45 +1173,37 @@ void ppoutputother(struct cb_exec_list *list)
 
   if ((com_stricmp(list->commandName, "INSERT") == 0) ||
       (com_stricmp(list->commandName, "DELETE") == 0) ||
-      (com_stricmp(list->commandName, "UPDATE") == 0))
-  {
+      (com_stricmp(list->commandName, "UPDATE") == 0)) {
     struct cb_hostreference_list *res_host_list;
     int iret;
 
     res_host_list = list->host_list;
     struct cb_field *parent, *child, *f;
     f = getfieldbyname(res_host_list->hostreference);
-    if (f == NULL)
-    {
+    if (f == NULL) {
       goto exit_occurs_check;
     }
 
     parent = f->parent;
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
       goto exit_occurs_check;
     }
 
     child = parent->children;
-    if (parent->occurs)
-    {
+    if (parent->occurs) {
       iteration = parent->occurs;
       occurs_is_parent = 1;
 
       iret = get_host_group_length(child, &length);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         goto exit_occurs_check;
       }
-    }
-    else
-    {
+    } else {
       iteration = -1;
       occurs_is_parent = 0;
 
       iret = get_host_group_table_info(child, &iteration, &length);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         goto exit_occurs_check;
       }
     }
@@ -1338,15 +1211,13 @@ void ppoutputother(struct cb_exec_list *list)
 exit_occurs_check:
   host_list = list->host_list;
   int count = 0;
-  while (host_list)
-  {
+  while (host_list) {
     count += ppoutputparam(host_list, iteration);
     host_list = host_list->next;
   }
 
   memset(buff, 0, sizeof(buff));
-  if (iteration > 0)
-  {
+  if (iteration > 0) {
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff),
                 "OCESQL%5sCALL \"OCESQLSetHostTable\" USING\n", " ");
@@ -1368,29 +1239,21 @@ exit_occurs_check:
     memset(buff, 0, sizeof(buff));
     com_sprintf(buff, sizeof(buff), "OCESQL%5sEND-CALL\n", " ");
     fputs(buff, outfile);
-    if (!list->conn_use_other_db)
-    {
+    if (!list->conn_use_other_db) {
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLExecParamsOccurs\" USING\n", " ");
       _printlog("Generate:OCESQLExecParamsOccurs");
-    }
-    else
-    {
+    } else {
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLIDExecParamsOccurs\" USING\n", " ");
       _printlog("Generate:OCESQLIDExecParamsOccurs");
     }
-  }
-  else
-  {
-    if (!list->conn_use_other_db)
-    {
+  } else {
+    if (!list->conn_use_other_db) {
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLExecParams\" USING\n", " ");
       _printlog("Generate:OCESQLExecParams");
-    }
-    else
-    {
+    } else {
       com_sprintf(buff, sizeof(buff),
                   "OCESQL%5sCALL \"OCESQLIDExecParams\" USING\n", " ");
       _printlog("Generate:OCESQLIDExecParams");
@@ -1402,16 +1265,14 @@ exit_occurs_check:
   com_sprintf(buff, sizeof(buff), "OCESQL%10sBY REFERENCE SQLCA\n", " ");
   fputs(buff, outfile);
 
-  if (list->conn_use_other_db)
-  {
+  if (list->conn_use_other_db) {
     int iret;
     int var_type;
     int var_len;
     int var_scale;
 
     iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-    if (iret != 0)
-    {
+    if (iret != 0) {
       memset(buff, 0, sizeof(buff));
       com_sprintf(buff, sizeof(buff), "E%03d", iret);
       printerrormsg(list->dbName, lineNUM, buff);
@@ -1450,99 +1311,84 @@ exit_occurs_check:
   ppoutputendcall(list);
 }
 
-int ppoutcontext(struct cb_exec_list *list)
-{
+int ppoutcontext(struct cb_exec_list *list) {
   if (list == NULL)
     return 1;
 
-  if (strcmp(list->commandName, "CONNECT") == 0)
-  {
+  if (strcmp(list->commandName, "CONNECT") == 0) {
 
     ppoutputconnect(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "OPEN") == 0)
-  {
+  if (strcmp(list->commandName, "OPEN") == 0) {
 
     ppoutputopen(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "EXECUTE") == 0)
-  {
+  if (strcmp(list->commandName, "EXECUTE") == 0) {
 
     ppoutputexecprepare(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "FETCH") == 0)
-  {
+  if (strcmp(list->commandName, "FETCH") == 0) {
 
     ppoutputfetch(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "COMMIT") == 0)
-  {
+  if (strcmp(list->commandName, "COMMIT") == 0) {
 
     ppoutputcommit(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "COMMIT_RELEASE") == 0)
-  {
+  if (strcmp(list->commandName, "COMMIT_RELEASE") == 0) {
 
     ppoutputcommit(list);
     ppoutputdisconnect(list);
     return 1;
   }
 
-  if (strcmp(list->commandName, "ROLLBACK") == 0)
-  {
+  if (strcmp(list->commandName, "ROLLBACK") == 0) {
 
     ppoutputrollback(list);
     return 1;
   }
-  if (strcmp(list->commandName, "ROLLBACK_RELEASE") == 0)
-  {
+  if (strcmp(list->commandName, "ROLLBACK_RELEASE") == 0) {
 
     ppoutputrollback(list);
     ppoutputdisconnect(list);
     return 1;
   }
-  if (strcmp(list->commandName, "INSERT") == 0)
-  {
+  if (strcmp(list->commandName, "INSERT") == 0) {
 
     ppoutputother(list);
     return 1;
   }
-  if (strcmp(list->commandName, "UPDATE") == 0)
-  {
+  if (strcmp(list->commandName, "UPDATE") == 0) {
 
     ppoutputother(list);
     return 1;
   }
-  if (strcmp(list->commandName, "DELETE") == 0)
-  {
+  if (strcmp(list->commandName, "DELETE") == 0) {
 
     ppoutputother(list);
     return 1;
   }
-  if (strcmp(list->commandName, "PREPARE") == 0)
-  {
+  if (strcmp(list->commandName, "PREPARE") == 0) {
 
     ppoutputprepare(list);
     return 1;
   }
-  if (strcmp(list->commandName, "DISCONNECT") == 0)
-  {
+  if (strcmp(list->commandName, "DISCONNECT") == 0) {
 
     ppoutputdisconnect(list);
     return 1;
   }
-  if (list->command_putother)
-  {
+  if (list->command_putother) {
 
     ppoutputother(list);
     return 1;
@@ -1551,8 +1397,7 @@ int ppoutcontext(struct cb_exec_list *list)
   return 0;
 }
 
-void ppbuff(struct cb_exec_list *list)
-{
+void ppbuff(struct cb_exec_list *list) {
   int var_type;
   int var_len;
   int var_scale;
@@ -1566,8 +1411,7 @@ void ppbuff(struct cb_exec_list *list)
   if (ppoutcontext(list) == 1)
     return;
 
-  if (strcmp(l->commandName, "INCLUDE") == 0)
-  {
+  if (strcmp(l->commandName, "INCLUDE") == 0) {
     com_strcpy(out, sizeof(out), "OCESQL ");
     com_strcat(out, sizeof(out), "    ");
     com_strcat(out, sizeof(out), "copy ");
@@ -1576,25 +1420,21 @@ void ppbuff(struct cb_exec_list *list)
     com_strcat(out, sizeof(out), "\".");
     outwrite();
   }
-  if (strcmp(l->commandName, "INCFILE") == 0)
-  {
+  if (strcmp(l->commandName, "INCFILE") == 0) {
     return;
   }
   if (strcmp(l->commandName, "HOST_BEGIN") == 0 ||
       strcmp(l->commandName, "HOST_END") == 0 ||
-      strcmp(l->commandName, "WORKING_BEGIN") == 0)
-  {
+      strcmp(l->commandName, "WORKING_BEGIN") == 0) {
     return;
   }
 
-  if (strcmp(l->commandName, "WORKING_END") == 0)
-  {
+  if (strcmp(l->commandName, "WORKING_END") == 0) {
     struct cb_exec_list *wk_head = l;
     outsqlfiller(wk_head);
   }
 
-  if (strcmp(l->commandName, "VARYING_PARAM") == 0)
-  {
+  if (strcmp(l->commandName, "VARYING_PARAM") == 0) {
     // modify cb_field
     struct cb_field *vp_parent, *vp_len, *vp_arr;
     int pstart;
@@ -1608,15 +1448,13 @@ void ppbuff(struct cb_exec_list *list)
     vp_arr = vp_len->sister;
 
     // get start position
-    for (pstart = 6; inbuff[pstart] != '\0'; pstart++)
-    {
+    for (pstart = 6; inbuff[pstart] != '\0'; pstart++) {
       if (inbuff[pstart] != ' ')
         break;
     }
 
     com_strcpy(out, sizeof(out), "OCESQL ");
-    for (istart = 7; istart < pstart; istart++)
-    {
+    for (istart = 7; istart < pstart; istart++) {
       com_strcat(out, sizeof(out), " ");
     }
     com_sprintf(vtmp, sizeof(vtmp), "%02d", vp_parent->level);
@@ -1627,8 +1465,7 @@ void ppbuff(struct cb_exec_list *list)
     outwrite();
 
     com_strcpy(out, sizeof(out), "OCESQL ");
-    for (istart = 7; istart < pstart; istart++)
-    {
+    for (istart = 7; istart < pstart; istart++) {
       com_strcat(out, sizeof(out), " ");
     }
     com_strcat(out, sizeof(out), "  ");
@@ -1640,8 +1477,7 @@ void ppbuff(struct cb_exec_list *list)
     outwrite();
 
     com_strcpy(out, sizeof(out), "OCESQL ");
-    for (istart = 7; istart < pstart; istart++)
-    {
+    for (istart = 7; istart < pstart; istart++) {
       com_strcat(out, sizeof(out), " ");
     }
     com_strcat(out, sizeof(out), "  ");
@@ -1656,13 +1492,10 @@ void ppbuff(struct cb_exec_list *list)
     outwrite();
   }
 
-  if (strcmp(l->commandName, "SELECT") == 0)
-  {
+  if (strcmp(l->commandName, "SELECT") == 0) {
     int count;
-    if (l->res_host_list == NULL)
-    {
-      if (l->hostreferenceCount != 0)
-      {
+    if (l->res_host_list == NULL) {
+      if (l->hostreferenceCount != 0) {
         com_strcpy(out, sizeof(out), "OCESQL ");
         com_strcat(out, sizeof(out), "   ");
         com_strcat(out, sizeof(out), strcall);
@@ -1675,69 +1508,48 @@ void ppbuff(struct cb_exec_list *list)
         outwrite();
         wk_host = l->host_list;
         count = 0;
-        for (; wk_host; wk_host = wk_host->next)
-        {
+        for (; wk_host; wk_host = wk_host->next) {
           count += ppoutputparam(wk_host, 0);
         }
 
         com_strcpy(out, sizeof(out), "OCESQL ");
         com_strcat(out, sizeof(out), "   ");
         com_strcat(out, sizeof(out), strcall);
-        if (strlen(l->cursorName) > 0)
-        {
-          if (l->conn_use_other_db)
-          {
+        if (strlen(l->cursorName) > 0) {
+          if (l->conn_use_other_db) {
             com_strcat(out, sizeof(out), "\"OCESQLIDCursorDeclareParams\"");
             _printlog("Generate:OCESQLIDCursorDeclareParams");
-          }
-          else
-          {
+          } else {
             com_strcat(out, sizeof(out), "\"OCESQLCursorDeclareParams\"");
             _printlog("Generate:OCESQLCursorDeclareParams");
           }
-        }
-        else
-        {
-          if (l->conn_use_other_db)
-          {
+        } else {
+          if (l->conn_use_other_db) {
             com_strcat(out, sizeof(out), "\"OCESQLIDExecParams\"");
             _printlog("Generate:OCESQLIDExecParams");
-          }
-          else
-          {
+          } else {
             com_strcat(out, sizeof(out), "\"OCESQLExecParams\"");
             _printlog("Generate:OCESQLExecParams");
           }
         }
         com_strcat(out, sizeof(out), strusing);
-      }
-      else
-      {
+      } else {
         com_strcpy(out, sizeof(out), "OCESQL ");
         com_strcat(out, sizeof(out), "   ");
         com_strcat(out, sizeof(out), strcall);
-        if (strlen(l->cursorName) > 0)
-        {
-          if (l->conn_use_other_db)
-          {
+        if (strlen(l->cursorName) > 0) {
+          if (l->conn_use_other_db) {
             com_strcat(out, sizeof(out), "\"OCESQLIDCursorDeclare\"");
             _printlog("Generate:OCESQLIDCursorDeclare");
-          }
-          else
-          {
+          } else {
             com_strcat(out, sizeof(out), "\"OCESQLCursorDeclare\"");
             _printlog("Generate:OCESQLCursorDeclare");
           }
-        }
-        else
-        {
-          if (l->conn_use_other_db)
-          {
+        } else {
+          if (l->conn_use_other_db) {
             com_strcat(out, sizeof(out), "\"OCESQLIDExec\"");
             _printlog("Generate:OCESQLIDExec");
-          }
-          else
-          {
+          } else {
             com_strcat(out, sizeof(out), "\"OCESQLExec\"");
             _printlog("Generate:OCESQLExec");
           }
@@ -1751,12 +1563,10 @@ void ppbuff(struct cb_exec_list *list)
       com_strcat(out, sizeof(out), strsqlca);
       outwrite();
 
-      if (list->conn_use_other_db)
-      {
+      if (list->conn_use_other_db) {
         iret =
             gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-        if (iret != 0)
-        {
+        if (iret != 0) {
           memset(buff, 0, sizeof(buff));
           com_sprintf(buff, sizeof(buff), "E%03d", iret);
           printerrormsg(list->dbName, lineNUM, buff);
@@ -1773,8 +1583,7 @@ void ppbuff(struct cb_exec_list *list)
         fputs(buff, outfile);
       }
 
-      if (strlen(l->cursorName) > 0)
-      {
+      if (strlen(l->cursorName) > 0) {
         com_strcpy(out, sizeof(out), "OCESQL ");
         com_strcat(out, sizeof(out), "       ");
         com_strcat(out, sizeof(out), strreference);
@@ -1790,8 +1599,7 @@ void ppbuff(struct cb_exec_list *list)
       com_strcat(out, sizeof(out), strreference);
       com_strcat(out, sizeof(out), l->sqlName);
       outwrite();
-      if (l->hostreferenceCount != 0)
-      {
+      if (l->hostreferenceCount != 0) {
         char str_type[BUFFSIZE];
         com_strcpy(out, sizeof(out), "OCESQL ");
         com_strcat(out, sizeof(out), "       ");
@@ -1818,9 +1626,7 @@ void ppbuff(struct cb_exec_list *list)
         com_strcat(out, sizeof(out), ".");
 
       outwrite();
-    }
-    else
-    { // SELECT INTO
+    } else { // SELECT INTO
       struct cb_res_hostreference_list *wk_res_host;
       int length = 0;
       int iteration = 0;
@@ -1842,21 +1648,18 @@ void ppbuff(struct cb_exec_list *list)
       iret = gethostvarianttype(wk_res_host->hostreference, &var_type, &var_len,
                                 &var_scale);
 
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(wk_res_host->hostreference, wk_res_host->lineno, buff);
         return;
       }
 
-      if (var_type == HVARTYPE_GROUP)
-      {
+      if (var_type == HVARTYPE_GROUP) {
         struct cb_field *parent, *child;
 
         parent = getfieldbyname(wk_res_host->hostreference);
-        if (parent == NULL)
-        {
+        if (parent == NULL) {
           printmsg("%s:%d\n", wk_res_host->hostreference, ERR_NOTDEF_WORKING);
           memset(buff, 0, sizeof(buff));
           com_sprintf(buff, sizeof(buff), "E%03d", ERR_NOTDEF_WORKING);
@@ -1866,28 +1669,23 @@ void ppbuff(struct cb_exec_list *list)
 
         child = parent->children;
 
-        if (parent->occurs)
-        {
+        if (parent->occurs) {
           iteration = parent->occurs;
           occurs_is_parent = 1;
           iret = get_host_group_length(child, &length);
-          if (iret != 0)
-          {
+          if (iret != 0) {
             memset(buff, 0, sizeof(buff));
             com_sprintf(buff, sizeof(buff), "E%03d", iret);
             printerrormsg(wk_res_host->hostreference, wk_res_host->lineno,
                           buff);
             return;
           }
-        }
-        else
-        {
+        } else {
           occurs_is_parent = 0;
           iteration = -1;
 
           iret = get_host_group_table_info(child, &iteration, &length);
-          if (iret != 0)
-          {
+          if (iret != 0) {
             memset(buff, 0, sizeof(buff));
             com_sprintf(buff, sizeof(buff), "E%03d", iret);
             printerrormsg(wk_res_host->hostreference, wk_res_host->lineno,
@@ -1896,12 +1694,10 @@ void ppbuff(struct cb_exec_list *list)
           }
         }
 
-        while (child != NULL)
-        {
+        while (child != NULL) {
           iret =
               gethostvarianttype(child->sname, &var_type, &var_len, &var_scale);
-          if (iret != 0)
-          {
+          if (iret != 0) {
             memset(buff, 0, sizeof(buff));
             com_sprintf(buff, sizeof(buff), "E%03d", iret);
             printerrormsg(child->sname, wk_res_host->lineno, buff);
@@ -1912,15 +1708,11 @@ void ppbuff(struct cb_exec_list *list)
           child = child->sister;
           reshostreferenceCount++;
         }
-      }
-      else
-      {
-        while (wk_res_host)
-        {
+      } else {
+        while (wk_res_host) {
           iret = gethostvarianttype(wk_res_host->hostreference, &var_type,
                                     &var_len, &var_scale);
-          if (iret != 0)
-          {
+          if (iret != 0) {
             memset(buff, 0, sizeof(buff));
             com_sprintf(buff, sizeof(buff), "E%03d", iret);
             printerrormsg(wk_res_host->hostreference, wk_res_host->lineno,
@@ -1936,13 +1728,11 @@ void ppbuff(struct cb_exec_list *list)
       }
       count = 0;
       wk_host = l->host_list;
-      for (; wk_host; wk_host = wk_host->next)
-      {
+      for (; wk_host; wk_host = wk_host->next) {
         count += ppoutputparam(wk_host, iteration);
       }
 
-      if (iteration)
-      {
+      if (iteration) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff),
                     "OCESQL%5sCALL \"OCESQLSetHostTable\" USING\n", " ");
@@ -1967,34 +1757,26 @@ void ppbuff(struct cb_exec_list *list)
         fputs(buff, outfile);
 
         memset(buff, 0, sizeof(buff));
-        if (l->conn_use_other_db)
-        {
+        if (l->conn_use_other_db) {
           com_sprintf(buff, sizeof(buff),
                       "OCESQL%5sCALL \"OCESQLIDExecSelectIntoOccurs\" USING\n",
                       " ");
           _printlog("Generate:OCESQLIDExecSelectIntoOccurs");
-        }
-        else
-        {
+        } else {
           com_sprintf(buff, sizeof(buff),
                       "OCESQL%5sCALL \"OCESQLExecSelectIntoOccurs\" USING\n",
                       " ");
           _printlog("Generate:OCESQLExecSelectIntoOccurs");
         }
         fputs(buff, outfile);
-      }
-      else
-      {
+      } else {
         memset(buff, 0, sizeof(buff));
-        if (l->conn_use_other_db)
-        {
+        if (l->conn_use_other_db) {
           com_sprintf(buff, sizeof(buff),
                       "OCESQL%5sCALL \"OCESQLIDExecSelectIntoOne\" USING\n",
                       " ");
           _printlog("Generate:OCESQLIDExecSelectIntoOne");
-        }
-        else
-        {
+        } else {
           com_sprintf(buff, sizeof(buff),
                       "OCESQL%5sCALL \"OCESQLExecSelectIntoOne\" USING\n", " ");
           _printlog("Generate:OCESQLExecSelectIntoOne");
@@ -2007,12 +1789,10 @@ void ppbuff(struct cb_exec_list *list)
       com_strcat(out, sizeof(out), strsqlca);
       outwrite();
 
-      if (list->conn_use_other_db)
-      {
+      if (list->conn_use_other_db) {
         iret =
             gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-        if (iret != 0)
-        {
+        if (iret != 0) {
           memset(buff, 0, sizeof(buff));
           com_sprintf(buff, sizeof(buff), "E%03d", iret);
           printerrormsg(list->dbName, lineNUM, buff);
@@ -2063,20 +1843,15 @@ void ppbuff(struct cb_exec_list *list)
 
       outwrite();
     }
-  }
-  else if (l->prepareName[0] != '\0')
-  {
+  } else if (l->prepareName[0] != '\0') {
     // DECLARE cursor for prepare
     com_strcpy(out, sizeof(out), "OCESQL ");
     com_strcat(out, sizeof(out), "   ");
     com_strcat(out, sizeof(out), strcall);
-    if (l->conn_use_other_db)
-    {
+    if (l->conn_use_other_db) {
       com_strcat(out, sizeof(out), "\"OCESQLIDPreparedCursorDeclare\"");
       _printlog("Generate:OCESQLIDPreparedCursorDeclare");
-    }
-    else
-    {
+    } else {
       com_strcat(out, sizeof(out), "\"OCESQLPreparedCursorDeclare\"");
       _printlog("Generate:OCESQLPreparedCursorDeclare");
     }
@@ -2088,11 +1863,9 @@ void ppbuff(struct cb_exec_list *list)
     com_strcat(out, sizeof(out), strsqlca);
     outwrite();
 
-    if (list->conn_use_other_db)
-    {
+    if (list->conn_use_other_db) {
       iret = gethostvarianttype(list->dbName, &var_type, &var_len, &var_scale);
-      if (iret != 0)
-      {
+      if (iret != 0) {
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", iret);
         printerrormsg(list->dbName, lineNUM, buff);
@@ -2134,8 +1907,7 @@ void ppbuff(struct cb_exec_list *list)
     outwrite();
   }
 
-  if (strcmp(l->commandName, "CLOSE") == 0)
-  {
+  if (strcmp(l->commandName, "CLOSE") == 0) {
 
     com_strcpy(out, sizeof(out), "OCESQL ");
     com_strcat(out, sizeof(out), "   ");
@@ -2175,37 +1947,32 @@ void ppbuff(struct cb_exec_list *list)
   return;
 }
 
-void ppbuff_incfile(struct cb_exec_list *list)
-{
+void ppbuff_incfile(struct cb_exec_list *list) {
   struct cb_exec_list *l;
 
   l = list;
 
-  if (strcmp(l->commandName, "INCFILE") == 0)
-  {
+  if (strcmp(l->commandName, "INCFILE") == 0) {
     char filename[512];
     FILE *incf;
     char incf_buff[BUFFSIZE + 1];
 
     memset(filename, 0, 512);
 
-    if (include_path)
-    {
+    if (include_path) {
       com_sprintf(filename, sizeof(filename), "%s/", include_path);
     }
     com_strcat(filename, sizeof(filename), l->incfileName);
 
     incf = fopen_or_die(filename, "r");
 
-    while (1)
-    {
+    while (1) {
       memset(incf_buff, 0, BUFFSIZE + 1);
       char *result = fgets(incf_buff, BUFFSIZE, incf);
       if (result == NULL)
         break;
 
-      if (strlen(incf_buff) > MAX_LINESIZE)
-      {
+      if (strlen(incf_buff) > MAX_LINESIZE) {
         char buff[10];
         memset(buff, 0, sizeof(buff));
         com_sprintf(buff, sizeof(buff), "E%03d", ERR_EXCEED_LIMIT_LINE_LENGTH);
@@ -2213,14 +1980,10 @@ void ppbuff_incfile(struct cb_exec_list *list)
       }
 
       int len = strlen(incf_buff);
-      if (len > 0 && incf_buff[len - 1] == '\n')
-      {
-        if (len > 1 && incf_buff[len - 2] == '\r')
-        {
+      if (len > 0 && incf_buff[len - 1] == '\n') {
+        if (len > 1 && incf_buff[len - 2] == '\r') {
           incf_buff[len - 2] = '\0';
-        }
-        else
-        {
+        } else {
           incf_buff[len - 1] = '\0';
         }
       }
@@ -2234,8 +1997,7 @@ void ppbuff_incfile(struct cb_exec_list *list)
   return;
 }
 
-void outwrite()
-{
+void outwrite() {
   size_t len;
 
   outbuff = out;
@@ -2244,8 +2006,7 @@ void outwrite()
   fputc('\n', outfile);
 }
 
-void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head)
-{
+void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head) {
   FILE *readfile;
 
   struct cb_exec_list *l;
@@ -2257,34 +2018,26 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head)
   outfile = fopen_or_die(ppout, "w");
 
   EOFFLG = 0;
-  if (readfile && outfile)
-  {
-    while (1)
-    {
+  if (readfile && outfile) {
+    while (1) {
       com_readline(readfile, inbuff, &lineNUM, &EOFflg);
-      if (EOFflg)
-      {
+      if (EOFflg) {
         break;
       }
       if (strstr(inbuff, INC_START_MARK) != NULL ||
-          strstr(inbuff, INC__END__MARK) != NULL)
-      {
+          strstr(inbuff, INC__END__MARK) != NULL) {
         continue;
       }
       size_t len;
-      if (head)
-      {
-        if (l->startLine <= lineNUM && l->endLine >= lineNUM)
-        {
-          if (strcmp(l->commandName, "WORKING_END") == 0)
-          {
+      if (head) {
+        if (l->startLine <= lineNUM && l->endLine >= lineNUM) {
+          if (strcmp(l->commandName, "WORKING_END") == 0) {
             ppbuff(l);
           }
 
           // printf("dbg: inbuff = %s\n", inbuff);
           if (strcmp(l->commandName, "WORKING_BEGIN") != 0 &&
-              strcmp(l->commandName, "WORKING_END") != 0)
-          {
+              strcmp(l->commandName, "WORKING_END") != 0) {
             inbuff[0] = 'O';
             inbuff[1] = 'C';
             inbuff[2] = 'E';
@@ -2297,37 +2050,28 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head)
           len = strlen(outbuff);
           fwrite(outbuff, len, 1, outfile);
 
-          if (strstr(inbuff, "\n") == NULL)
-          {
+          if (strstr(inbuff, "\n") == NULL) {
             fputc('\n', outfile);
           }
-          if (EOFflg == 1)
-          {
+          if (EOFflg == 1) {
             fputc('\n', outfile);
           }
 
-          if (lineNUM == l->endLine)
-          {
-            if (strcmp(l->commandName, "WORKING_END"))
-            {
+          if (lineNUM == l->endLine) {
+            if (strcmp(l->commandName, "WORKING_END")) {
               ppbuff(l);
             }
 
-            if (l->next != NULL)
-            {
+            if (l->next != NULL) {
               l = l->next;
             }
           }
-        }
-        else
-        {
+        } else {
           outbuff = inbuff;
           len = strlen(outbuff);
           fwrite(outbuff, len, 1, outfile);
         }
-      }
-      else
-      {
+      } else {
         outbuff = inbuff;
         len = strlen(outbuff);
         fwrite(outbuff, len, 1, outfile);
@@ -2341,8 +2085,7 @@ void ppoutput(char *ppin, char *ppout, struct cb_exec_list *head)
   remove(ppin);
 }
 
-void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head)
-{
+void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head) {
   FILE *readfile;
   size_t len;
 
@@ -2354,20 +2097,15 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head)
 
   EOFFLG = 0;
   int after_first_read = 0;
-  while (EOFflg != 1)
-  {
-    if (after_first_read)
-    {
+  while (EOFflg != 1) {
+    if (after_first_read) {
       fwrite(outbuff, len, 1, outfile);
     }
     com_readline(readfile, inbuff, &lineNUM, &EOFflg);
     after_first_read = 1;
-    if (head)
-    {
-      if (l->startLine <= lineNUM && l->endLine >= lineNUM)
-      {
-        if (strcmp(l->commandName, "INCFILE") == 0)
-        {
+    if (head) {
+      if (l->startLine <= lineNUM && l->endLine >= lineNUM) {
+        if (strcmp(l->commandName, "INCFILE") == 0) {
           inbuff[0] = 'O';
           inbuff[1] = 'C';
           inbuff[2] = 'E';
@@ -2380,25 +2118,19 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head)
         outbuff = inbuff;
         len = strlen(outbuff);
 
-        if (EOFflg == 1)
-        {
+        if (EOFflg == 1) {
           fputc('\n', outfile);
         }
-      }
-      else
-      {
-        if (lineNUM - l->endLine == 1)
-        {
-          if (strcmp(l->commandName, "INCFILE") == 0)
-          {
+      } else {
+        if (lineNUM - l->endLine == 1) {
+          if (strcmp(l->commandName, "INCFILE") == 0) {
             ppbuff_incfile(l);
           }
           if (l->next != NULL)
             l = l->next;
 
           if (l->startLine <= lineNUM && l->endLine >= lineNUM &&
-              (strcmp(l->commandName, "INCFILE") == 0))
-          {
+              (strcmp(l->commandName, "INCFILE") == 0)) {
             inbuff[0] = 'O';
             inbuff[1] = 'C';
             inbuff[2] = 'E';
@@ -2409,16 +2141,12 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head)
           }
           outbuff = inbuff;
           len = strlen(outbuff);
-        }
-        else
-        {
+        } else {
           outbuff = inbuff;
           len = strlen(outbuff);
         }
       }
-    }
-    else
-    {
+    } else {
       outbuff = inbuff;
       len = strlen(outbuff);
     }
@@ -2427,36 +2155,26 @@ void ppoutput_incfile(char *ppin, char *ppout, struct cb_exec_list *head)
   fclose(outfile);
 }
 
-int check_Dchar(char c)
-{
+int check_Dchar(char c) {
   unsigned char uc = (unsigned char)c;
-  if (uc >= 0x81 && uc <= 0x9f)
-  {
+  if (uc >= 0x81 && uc <= 0x9f) {
     return 1;
-  }
-  else if (uc >= 0xe0 && uc <= 0xef)
-  {
+  } else if (uc >= 0xe0 && uc <= 0xef) {
     return 1;
   }
   return 0;
 }
 
-int get_host_group_length(struct cb_field *field, int *length)
-{
+int get_host_group_length(struct cb_field *field, int *length) {
   if (field == NULL)
     return 0;
 
   if ((field->pictype == PIC_NATIONAL) ||
-      (field->pictype == PIC_NATIONAL_VARYING))
-  {
+      (field->pictype == PIC_NATIONAL_VARYING)) {
     *length += field->picnsize * 2;
-  }
-  else if (field->usage == USAGE_PACKED)
-  {
+  } else if (field->usage == USAGE_PACKED) {
     *length += field->picnsize / 2 + 1;
-  }
-  else
-  {
+  } else {
     *length += field->picnsize;
   }
 
@@ -2464,41 +2182,30 @@ int get_host_group_length(struct cb_field *field, int *length)
 }
 
 int get_host_group_table_info(struct cb_field *field, int *iteration,
-                              int *length)
-{
+                              int *length) {
   if (field == NULL)
     return 0;
 
-  if (field->occurs)
-  {
-    if (*iteration == -1 || field->occurs < *iteration)
-    {
+  if (field->occurs) {
+    if (*iteration == -1 || field->occurs < *iteration) {
       *iteration = field->occurs;
     }
-  }
-  else
-  {
+  } else {
     *iteration = 0;
   }
   if ((field->pictype == PIC_NATIONAL) ||
-      (field->pictype == PIC_NATIONAL_VARYING))
-  {
+      (field->pictype == PIC_NATIONAL_VARYING)) {
     *length += field->picnsize * 2;
-  }
-  else if (field->usage == USAGE_PACKED)
-  {
+  } else if (field->usage == USAGE_PACKED) {
     *length += field->picnsize / 2 + 1;
-  }
-  else
-  {
+  } else {
     *length += field->picnsize;
   }
 
   return get_host_group_table_info(field->sister, iteration, length);
 }
 
-void parameter_split(struct cb_field *vp_parent)
-{
+void parameter_split(struct cb_field *vp_parent) {
   struct cb_field *vp_len, *vp_arr;
   char *basename;
   int varlen;
@@ -2506,8 +2213,7 @@ void parameter_split(struct cb_field *vp_parent)
 
   vp_len = malloc(sizeof(struct cb_field));
   vp_arr = malloc(sizeof(struct cb_field));
-  if (vp_len == NULL || vp_arr == NULL)
-  {
+  if (vp_len == NULL || vp_arr == NULL) {
     printmsg("parameter_split: memory allocation for cb_field failed.\n");
     goto die_parameter_split;
   }
@@ -2522,8 +2228,7 @@ void parameter_split(struct cb_field *vp_parent)
   // vp_len
   vp_len->sname = (char *)malloc(
       (strlen(basename) + strlen("-LEN") + TERMINAL_LENGTH) * sizeof(char));
-  if (vp_len->sname == NULL)
-  {
+  if (vp_len->sname == NULL) {
     printmsg("parameter_split: memory allocation for vp_len->sname failed.\n");
     goto die_parameter_split;
   }
@@ -2539,8 +2244,7 @@ void parameter_split(struct cb_field *vp_parent)
   // vp_arr
   vp_arr->sname = (char *)malloc(
       (strlen(basename) + strlen("-ARR") + TERMINAL_LENGTH) * sizeof(char));
-  if (vp_arr->sname == NULL)
-  {
+  if (vp_arr->sname == NULL) {
     printmsg("parameter_split: memory allocation for vp_arr->sname failed.\n");
     goto die_parameter_split;
   }
@@ -2552,26 +2256,21 @@ void parameter_split(struct cb_field *vp_parent)
   vp_len->sister = vp_arr;
 
   // vp_parent
-  if (vp_parent->pictype == PIC_NATIONAL)
-  {
+  if (vp_parent->pictype == PIC_NATIONAL) {
     vp_parent->pictype = PIC_NATIONAL_VARYING;
-  }
-  else
-  {
+  } else {
     vp_parent->pictype = PIC_ALPHANUMERIC_VARYING;
   }
 
   return;
 
 die_parameter_split:
-  if (vp_len)
-  {
+  if (vp_len) {
     if (vp_len->sname)
       free(vp_len->sname);
     free(vp_len);
   }
-  if (vp_arr)
-  {
+  if (vp_arr) {
     if (vp_arr->sname)
       free(vp_arr->sname);
     free(vp_arr);
@@ -2580,13 +2279,11 @@ die_parameter_split:
   return;
 }
 
-FILE *fopen_or_die(char *filename, const char *mode)
-{
+FILE *fopen_or_die(char *filename, const char *mode) {
   FILE *retval;
   com_fopen(&retval, filename, mode);
 
-  if (retval == NULL)
-  {
+  if (retval == NULL) {
     perror(filename);
     exit(-1);
   }
