@@ -783,9 +783,26 @@ class OCESQLCursorFetchOne extends CobolRunnableWrapper {
       for ((sv, i) <- state.globalState.sqlResVarQueue.zipWithIndex) {
         if (i < fields) {
           fetchRecord = fetchRecord ::: List(ocdbGetValue(rs, sv, i + 1))
+          val byteArray: Array[Byte] = fetchRecord.flatten.flatten.toArray
+          println("dbg: type=" + sv.sqlVarType)
+          // if(sv.sqlVarType == OCDB_TYPE_ALPHANUMERIC_VARYING){
+          createCobolData(sv, 0, byteArray, state.globalState.occursInfo)
+          // }
         }
       }
       fetchRecords = fetchRecords ::: List(fetchRecord)
+      // dbg-start
+      // val readableRecord = fetchRecord.map { recordOption =>
+      //     recordOption match {
+      //         // データが存在する場合 (Some)
+      //         case Some(bytes) => new String(bytes, "UTF-8") // バイト配列をUTF-8文字列に変換
+      //         // データが存在しない場合 (None / SQLのNULLに相当)
+      //         case None        => "NULL"
+      //     }
+      // }.mkString(", ") // 各要素をカンマ区切りで連結
+
+      // println("dbg:" + readableRecord)
+      // dbg-end
     }
     updateFetchRecords(name, fetchRecords, true, state)
   }
