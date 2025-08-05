@@ -40,6 +40,8 @@ FILE *outfile;
 int EOFflg = 0;
 int EOFFLG = 0;
 int lineNUM = 0;
+int is_odd_single_quote = 0;
+int is_odd_double_quote = 0;
 
 int japflg = 0;
 int charcount = 0;
@@ -126,6 +128,7 @@ void sql_string(const struct cb_exec_list *wk_text) {
   strcpy(sqlloop, wk_text->sqlBody);
   sqllen = strlen(sqlloop);
   fprintf(outfile, "OCESQL     02  FILLER PIC X(%d) VALUE", sqllen);
+  // printf("dbg: sqlloop = '%s'\n", sqlloop);
 
   const char *p_sql = sqlloop;
   const char *sql_end = sqlloop + sqllen;
@@ -148,26 +151,44 @@ void sql_string(const struct cb_exec_list *wk_text) {
     line_buff[line_len] = '\0';
 
     // Remove trailing spaces
-    char *end = line_buff + line_len - 1;
-    while (end >= line_buff && isspace((unsigned char)*end)) {
-      *end-- = '\0';
-    }
-
-    // Remove spaces from the A area
     int i;
-    int a_len = 4;
-    for (i = 0; i < a_len && line_buff[i] != '\n'; i++) {
-      if (!isspace((unsigned char)line_buff[i])) {
-        break;
+
+    for (i = 0; line_buff[i] != '\0'; i++) {
+      if (line_buff[i] == '\'') {
+        is_odd_single_quote ^= 1;
+      }
+      if (line_buff[i] == '\"') {
+        is_odd_double_quote ^= 1;
       }
     }
-    if (i == a_len) { // A area is all spaces
-      line_len = strlen(line_buff + a_len);
-      memmove(line_buff, line_buff + a_len, line_len + 1);
-    } else { // A area has non-space characters
-      line_len = strlen(line_buff);
-      memmove(line_buff, line_buff, line_len);
+
+    if (is_odd_single_quote || is_odd_double_quote) {
+      int b_len = 65;
+      char *end = line_buff + b_len + 1;
+      *end = '\0';
+    } else {
+      char *end = line_buff + line_len - 1;
+      while (end >= line_buff && isspace((unsigned char)*end)) {
+        *end-- = '\0';
+      }
+      // Remove spaces from the A area
+      int a_len = 4;
+      for (i = 0; i < a_len && line_buff[i] != '\n'; i++) {
+        if (!isspace((unsigned char)line_buff[i])) {
+          break;
+        }
+      }
+      if (i == a_len) { // A area is all spaces
+        line_len = strlen(line_buff + a_len);
+        memmove(line_buff, line_buff + a_len, line_len + 1);
+      }
     }
+
+    printf("dbg: line_buff = '%s'\n", line_buff);
+    // else { // A area has non-space characters
+    //   line_len = strlen(line_buff + i_len);
+    //   memmove(line_buff, line_buff + i_len, line_len + 1);
+    // }
 
     // Output strings that fit within the B area to file.
     // Output overflow characters to the next line.
@@ -185,9 +206,11 @@ void sql_string(const struct cb_exec_list *wk_text) {
           fprintf(outfile, "\"\nOCESQL  &  \"");
 
           // Insert space if there is no space between this and the previous
-          if (!isspace((unsigned char)*p_line) && is_first_line) {
-            fprintf(outfile, " ");
-            maximum_chars_in_single_line--;
+          if (!is_odd_double_quote && !is_odd_single_quote) {
+            if (!isspace((unsigned char)*p_line) && is_first_line) {
+              fprintf(outfile, " ");
+              maximum_chars_in_single_line--;
+            }
           }
         }
         is_first_line = 0;
@@ -256,6 +279,8 @@ void outsqlfiller(struct cb_exec_list *wk_head_p) {
       outwrite();
 
       sql_string(wk_head_p);
+      is_odd_single_quote = 0;
+      is_odd_double_quote = 0;
 
       com_strcpy(out, sizeof(out), "OCESQL*");
       outwrite();
