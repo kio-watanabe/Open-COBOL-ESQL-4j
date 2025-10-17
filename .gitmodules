@@ -1,3 +1,4 @@
 [submodule "opensourcecobol4j"]
 	path = opensourcecobol4j
-	url = https://github.com/opensourcecobol/opensourcecobol4j.git
+	url = https://github.com/kio-watanabe/opensourcecobol4j.git
+	branch = improve-sql
